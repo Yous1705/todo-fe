@@ -22,7 +22,7 @@ interface TodoContextType {
 
   fetchTodo: (page?: number, limit?: number) => Promise<void>;
   createTodo: (todo: TodoDto) => Promise<void>;
-  updateTodo: (id: number, todo: TodoDto) => Promise<void>;
+  updateTodo: (id: number, todo: Partial<TodoDto>) => Promise<void>;
   deleteTodo: (id: number) => Promise<void>;
 
   searchKeyword: string;
@@ -97,7 +97,7 @@ export function TodoProvider({ children }: TodoProviderProps) {
     await fetchTodo();
   };
 
-  const updateTodo = async (id: number, todo: TodoDto) => {
+  const updateTodo = async (id: number, todo: Partial<TodoDto>) => {
     await todoService.update(id, todo);
     await fetchTodo();
   };

@@ -1,6 +1,13 @@
 "use client";
+import CreateTodoDrawer from "@/component/CreateTodoDrawer";
+import UpdateTodoDrawer from "@/component/UpdateTodoDrawer";
 import { useTodo } from "@/context/todo.context";
-import { PriorityEnum, SearchTodoParams, StatusEnum } from "@/type/todo.type";
+import {
+  PriorityEnum,
+  SearchTodoParams,
+  StatusEnum,
+  Todo,
+} from "@/type/todo.type";
 import { Badge, Button, Table } from "antd";
 import React, { useState } from "react";
 
@@ -16,6 +23,9 @@ function page() {
     clearSearch,
   } = useTodo();
   const [keyword, setKeyword] = useState("");
+  const [openCreate, setOpenCreate] = useState(false);
+  const [openUpdate, setOpenUpdate] = useState(false);
+  const [selectedTodo, setSelectedTodo] = useState<Todo | null>(null);
 
   const [filters, setFilters] = useState<SearchTodoParams>({
     title: "",
@@ -24,22 +34,17 @@ function page() {
   });
 
   const handleSearch = async () => {
-    // Hapus field kosong agar tidak dikirim ke backend
     const params: SearchTodoParams = {};
 
     if (filters.title?.trim()) {
       params.title = filters.title.trim();
     }
-
     if (filters.status) {
       params.status = filters.status;
     }
-
     if (filters.priority) {
       params.priority = filters.priority;
     }
-
-    // Jika tidak ada filter, tampilkan semua todo
     if (Object.keys(params).length === 0) {
       await clearSearch();
       return;
@@ -48,13 +53,22 @@ function page() {
     await searchTodos(params);
   };
 
+  const handleOpenUpdate = (todo: Todo) => {
+    setSelectedTodo(todo);
+    setOpenUpdate(true);
+  };
+
+  const handleCloseUpdate = () => {
+    setOpenUpdate(false);
+    setSelectedTodo(null);
+  };
+
   if (loading) return <div>loading</div>;
   if (error) return <div>{error}</div>;
 
   return (
     <div>
       <div>
-        {/* Title */}
         <input
           type="text"
           placeholder="Search by title"
@@ -66,8 +80,6 @@ function page() {
             })
           }
         />
-
-        {/* Status */}
         <select
           value={filters.status ?? ""}
           onChange={(e) =>
@@ -82,7 +94,6 @@ function page() {
           <option value="COMPLETED">Completed</option>
         </select>
 
-        {/* Priority */}
         <select
           value={filters.priority ?? ""}
           onChange={(e) =>
@@ -116,6 +127,33 @@ function page() {
         >
           Reset
         </button>
+      </div>
+
+      <div className="py-10 px-10">
+        <Button type="primary" onClick={() => setOpenCreate(true)}>
+          Add Todo
+        </Button>
+        <div style={{ marginTop: 24 }}>
+          {todo.map((todo) => (
+            <div key={todo.id} style={{ marginBottom: 16 }}>
+              <h3>{todo.title}</h3>
+              <p>{todo.description}</p>
+
+              <Button onClick={() => handleOpenUpdate(todo)}>Edit</Button>
+            </div>
+          ))}
+        </div>
+
+        <CreateTodoDrawer
+          open={openCreate}
+          onClose={() => setOpenCreate(false)}
+        />
+
+        <UpdateTodoDrawer
+          open={openUpdate}
+          onClose={handleCloseUpdate}
+          todo={selectedTodo}
+        />
       </div>
       <Table
         dataSource={todo}

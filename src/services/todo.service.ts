@@ -35,7 +35,7 @@ export const todoService = {
     return response.data.data;
   },
 
-  async update(id: number, dto: TodoDto): Promise<Todo> {
+  async update(id: number, dto: Partial<TodoDto>): Promise<Todo> {
     const response = await axiosInstance.patch<ApiResponse<Todo>>(
       `todo/${id}`,
       dto,
