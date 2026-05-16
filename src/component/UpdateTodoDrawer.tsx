@@ -75,7 +75,7 @@ export default function UpdateTodoDrawer({
       title="Update Todo"
       open={open}
       onClose={onClose}
-      width={480}
+      size="large"
       destroyOnClose
     >
       <Form form={form} layout="vertical" onFinish={handleSubmit}>

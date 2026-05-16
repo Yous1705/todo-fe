@@ -55,7 +55,7 @@ export default function CreateTodoDrawer({
       title="Create Todo"
       open={open}
       onClose={onClose}
-      width={480}
+      size="large"
       destroyOnClose
     >
       <Form
