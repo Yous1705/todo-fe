@@ -6,6 +6,7 @@ import dayjs, { Dayjs } from "dayjs";
 
 import { PriorityEnum, StatusEnum } from "@/type/todo.type";
 import { useTodo } from "@/hooks/useTodo";
+import { useCategory } from "@/hooks/useCategory"; // ✅ pakai hook
 
 const { TextArea } = Input;
 
@@ -30,11 +31,11 @@ export default function CreateTodoDrawer({
   const [form] = Form.useForm<CreateTodoFormValues>();
   const [loading, setLoading] = useState(false);
   const { createTodo } = useTodo();
+  const { categories, loading: categoryLoading } = useCategory(); // ✅
 
   const handleSubmit = async (values: CreateTodoFormValues) => {
     try {
       setLoading(true);
-
       await createTodo({
         title: values.title,
         description: values.description ?? "",
@@ -43,7 +44,6 @@ export default function CreateTodoDrawer({
         due_date: values.due_date ?? dayjs(),
         categoryId: Number(values.categoryId),
       });
-
       form.resetFields();
       onClose();
     } finally {
@@ -63,10 +63,7 @@ export default function CreateTodoDrawer({
         form={form}
         layout="vertical"
         onFinish={handleSubmit}
-        initialValues={{
-          priority: "LOW",
-          status: "INCOMPLETE",
-        }}
+        initialValues={{ priority: "LOW", status: "INCOMPLETE" }}
       >
         <Form.Item
           label="Title"
@@ -104,11 +101,26 @@ export default function CreateTodoDrawer({
         </Form.Item>
 
         <Form.Item
-          label="Category ID"
+          label="Category"
           name="categoryId"
           rules={[{ required: true, message: "Category is required" }]}
         >
-          <Input type="number" />
+          <Select
+            loading={categoryLoading}
+            placeholder="Select a category"
+            options={categories.map((cat) => ({
+              label: (
+                <div className="flex items-center gap-2">
+                  <span
+                    className="inline-block w-3 h-3 rounded-full flex-shrink-0"
+                    style={{ backgroundColor: cat.color }}
+                  />
+                  {cat.name}
+                </div>
+              ),
+              value: cat.id,
+            }))}
+          />
         </Form.Item>
 
         <Button type="primary" htmlType="submit" loading={loading} block>
