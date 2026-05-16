@@ -1,7 +1,8 @@
 "use client";
 
+import { categoryService } from "@/services/category.service";
 import { todoService } from "@/services/todo.service";
-import { PaginationMeta } from "@/type/pagination.type";
+import { PaginationMeta } from "@/type/api.type";
 import { SearchTodoParams, Todo, TodoDto } from "@/type/todo.type";
 import {
   createContext,
@@ -21,6 +22,7 @@ interface TodoContextType {
   limit: number;
 
   fetchTodo: (page?: number, limit?: number) => Promise<void>;
+  fetchTodosByCategory: (categoryId: number) => Promise<void>;
   createTodo: (todo: TodoDto) => Promise<void>;
   updateTodo: (id: number, todo: Partial<TodoDto>) => Promise<void>;
   deleteTodo: (id: number) => Promise<void>;
@@ -34,7 +36,9 @@ interface TodoContextType {
   setLimit: (limit: number) => void;
 }
 
-const TodoContext = createContext<TodoContextType | undefined>(undefined);
+export const TodoContext = createContext<TodoContextType | undefined>(
+  undefined,
+);
 
 interface TodoProviderProps {
   children: ReactNode;
@@ -87,6 +91,24 @@ export function TodoProvider({ children }: TodoProviderProps) {
     }
   };
 
+  const fetchTodosByCategory = async (categoryId: number): Promise<void> => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const response =
+        await categoryService.getTodosByCategory<Todo>(categoryId);
+
+      setTodo(response.data);
+      setMeta(null); // karena endpoint ini tidak mengembalikan pagination
+    } catch (error) {
+      setError("Failed to fetch todos by category");
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const clearSearch = async () => {
     setSearchKeyword("");
     await fetchTodo(1, limit);
@@ -124,6 +146,7 @@ export function TodoProvider({ children }: TodoProviderProps) {
         limit,
         searchKeyword,
         fetchTodo,
+        fetchTodosByCategory,
         createTodo,
         updateTodo,
         deleteTodo,
@@ -137,14 +160,4 @@ export function TodoProvider({ children }: TodoProviderProps) {
       {children}
     </TodoContext.Provider>
   );
-}
-
-export function useTodo() {
-  const context = useContext(TodoContext);
-
-  if (!context) {
-    throw new Error("useTodo must be used within a TodoProvider");
-  }
-
-  return context;
 }

@@ -4,7 +4,12 @@ export interface Category {
   color: string;
 }
 
-export interface CategoryDto {
+export interface CreateCategoryDto {
   name: string;
   color: string;
+}
+
+export interface UpdateCategoryDto {
+  name?: string;
+  color?: string;
 }

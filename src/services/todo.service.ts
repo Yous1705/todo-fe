@@ -1,5 +1,5 @@
 import axiosInstance from "@/lib/axios";
-import { ApiResponse, PaginatedResponse } from "@/type/pagination.type";
+import { ApiResponse, PaginatedResponse } from "@/type/api.type";
 import {
   GetTodosParams,
   SearchTodoParams,

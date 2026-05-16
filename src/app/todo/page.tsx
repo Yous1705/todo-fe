@@ -1,7 +1,7 @@
 "use client";
 import CreateTodoDrawer from "@/component/CreateTodoDrawer";
 import UpdateTodoDrawer from "@/component/UpdateTodoDrawer";
-import { useTodo } from "@/context/todo.context";
+
 import {
   PriorityEnum,
   SearchTodoParams,
@@ -38,6 +38,9 @@ import {
   List,
 } from "lucide-react";
 import dayjs from "dayjs";
+import { useTodo } from "@/hooks/useTodo";
+import { useCategory } from "@/hooks/useCategory";
+import { categoryService } from "@/services/category.service";
 
 function Page() {
   const {
@@ -50,7 +53,9 @@ function Page() {
     searchTodos,
     clearSearch,
     deleteTodo,
+    fetchTodosByCategory,
   } = useTodo();
+  const { categories } = useCategory();
 
   const [openCreate, setOpenCreate] = useState(false);
   const [openUpdate, setOpenUpdate] = useState(false);
@@ -59,22 +64,40 @@ function Page() {
 
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
-  const [filters, setFilters] = useState<SearchTodoParams>({
+  const [filters, setFilters] = useState<
+    SearchTodoParams & { categoryId?: number }
+  >({
     title: "",
     status: undefined,
     priority: undefined,
+    categoryId: undefined,
   });
 
   const handleSearch = async () => {
+    if (filters.categoryId) {
+      await fetchTodosByCategory(filters.categoryId);
+      return;
+    }
+
     const params: SearchTodoParams = {};
-    if (filters.title?.trim()) params.title = filters.title.trim();
-    if (filters.status) params.status = filters.status;
-    if (filters.priority) params.priority = filters.priority;
+
+    if (filters.title?.trim()) {
+      params.title = filters.title.trim();
+    }
+
+    if (filters.status) {
+      params.status = filters.status;
+    }
+
+    if (filters.priority) {
+      params.priority = filters.priority;
+    }
 
     if (Object.keys(params).length === 0) {
       await clearSearch();
       return;
     }
+
     await searchTodos(params);
   };
 
@@ -103,12 +126,19 @@ function Page() {
       dataIndex: "title",
       key: "title",
       render: (text: string, item: Todo) => (
-        <span
-          className="font-semibold text-slate-900 cursor-pointer hover:text-blue-600 transition-colors"
-          onClick={() => handleOpenUpdate(item)}
+        <div
+          className="pl-3 py-1 -ml-4"
+          style={{
+            borderLeft: `4px solid ${item.category?.color || "#CBD5E1"}`,
+          }}
         >
-          {text}
-        </span>
+          <span
+            className="font-semibold text-slate-900 cursor-pointer hover:text-blue-600 transition-colors"
+            onClick={() => handleOpenUpdate(item)}
+          >
+            {text}
+          </span>
+        </div>
       ),
     },
     {
@@ -328,6 +358,31 @@ function Page() {
                 />
 
                 <Select
+                  placeholder="All Category"
+                  className="w-full sm:w-48"
+                  value={filters.categoryId}
+                  allowClear
+                  onChange={(value) =>
+                    setFilters({
+                      ...filters,
+                      categoryId: value,
+                    })
+                  }
+                  options={categories.map((category) => ({
+                    value: category.id,
+                    label: (
+                      <div className="flex items-center gap-2">
+                        <span
+                          className="w-3 h-3 rounded-full"
+                          style={{ backgroundColor: category.color }}
+                        />
+                        <span>{category.name}</span>
+                      </div>
+                    ),
+                  }))}
+                />
+
+                <Select
                   placeholder="All Priority"
                   className="w-full sm:w-40"
                   value={filters.priority}
@@ -380,6 +435,7 @@ function Page() {
                         title: "",
                         status: undefined,
                         priority: undefined,
+                        categoryId: undefined,
                       });
                       await clearSearch();
                     }}
@@ -423,6 +479,11 @@ function Page() {
                 <Col xs={24} md={12} lg={8} key={item.id}>
                   <Card
                     className="border-slate-200/80 hover:border-slate-300 hover:shadow-md transition-all duration-200 h-full group"
+                    style={{
+                      borderLeft: `5px solid ${
+                        item.category?.color || "#CBD5E1"
+                      }`,
+                    }}
                     styles={{
                       body: {
                         padding: "1.25rem",
@@ -520,6 +581,13 @@ function Page() {
                 rowKey="id"
                 pagination={false}
                 className="[&_.ant-table]:bg-transparent"
+                onRow={(record) => ({
+                  style: {
+                    background: `5px solid ${
+                      record.category?.color || "#255590"
+                    }`,
+                  },
+                })}
               />
             </div>
           )}

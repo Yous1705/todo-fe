@@ -9,6 +9,7 @@ export interface Todo {
   category: {
     id: number;
     name: string;
+    color: string;
   };
 }
 

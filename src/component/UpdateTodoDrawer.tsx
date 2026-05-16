@@ -3,8 +3,9 @@
 import { useEffect, useState } from "react";
 import { Button, Drawer, Form, Input, Select, DatePicker } from "antd";
 import dayjs from "dayjs";
-import { useTodo } from "@/context/todo.context";
+
 import { PriorityEnum, StatusEnum, Todo, TodoDto } from "@/type/todo.type";
+import { useTodo } from "@/hooks/useTodo";
 
 const { TextArea } = Input;
 
@@ -14,7 +15,6 @@ interface UpdateTodoDrawerProps {
   todo: Todo | null;
 }
 
-// ✅ Correct form shape: categoryId instead of category.name
 interface UpdateTodoFormValues {
   title: string;
   description?: string;
@@ -42,7 +42,6 @@ export default function UpdateTodoDrawer({
         priority: todo.priority,
         status: todo.status,
         due_date: todo.due_date ? dayjs(todo.due_date) : undefined,
-        // ✅ Populate categoryId from todo.category.id
         categoryId: todo.category.id,
       });
     }
@@ -59,7 +58,6 @@ export default function UpdateTodoDrawer({
         description: values.description ?? todo.description,
         priority: values.priority as PriorityEnum,
         status: values.status as StatusEnum,
-        // ✅ Use form value, fall back to existing todo value
         due_date: values.due_date ?? todo.due_date ?? dayjs(),
         categoryId: values.categoryId ?? todo.category.id,
       });

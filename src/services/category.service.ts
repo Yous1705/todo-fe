@@ -1,12 +1,55 @@
 import axiosInstance from "@/lib/axios";
-import { Category } from "@/type/category.type";
-import { ApiResponse } from "@/type/pagination.type";
+import { ApiResponse } from "@/type/api.type";
+import {
+  Category,
+  CreateCategoryDto,
+  UpdateCategoryDto,
+} from "@/type/category.type";
 
 export const categoryService = {
-  async getAll() {
+  async getAll(): Promise<ApiResponse<Category[]>> {
     const response =
       await axiosInstance.get<ApiResponse<Category[]>>("category");
 
-    return response.data.data;
+    return response.data;
+  },
+
+  async getTodosByCategory<T = any>(
+    categoryId: number,
+  ): Promise<ApiResponse<T[]>> {
+    const response = await axiosInstance.get<ApiResponse<T[]>>(
+      `category/${categoryId}/todos`,
+    );
+
+    return response.data;
+  },
+
+  async create(payload: CreateCategoryDto): Promise<ApiResponse<null>> {
+    const response = await axiosInstance.post<ApiResponse<null>>(
+      "category",
+      payload,
+    );
+
+    return response.data;
+  },
+
+  async update(
+    categoryId: number,
+    payload: UpdateCategoryDto,
+  ): Promise<ApiResponse<null>> {
+    const response = await axiosInstance.patch<ApiResponse<null>>(
+      `category/${categoryId}`,
+      payload,
+    );
+
+    return response.data;
+  },
+
+  async delete(categoryId: number): Promise<ApiResponse<null>> {
+    const response = await axiosInstance.delete<ApiResponse<null>>(
+      `category/${categoryId}`,
+    );
+
+    return response.data;
   },
 };
