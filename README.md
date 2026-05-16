@@ -1,36 +1,121 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Frontend Documentation
 
-## Getting Started
+## 1. Frontend Overview & Implemented Features
 
-First, run the development server:
+This project is a **Todo List & Category Management Dashboard** built with the following technologies:
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- **Next.js**: A React framework for server-side rendering and static site generation.
+- **TypeScript**: A statically typed superset of JavaScript.
+- **Tailwind CSS**: A utility-first CSS framework for styling.
+- **Ant Design v5**: A modern UI library for React.
+
+### Implemented Features
+
+- **Grid/List Responsive Toggle Layout**: Users can switch between grid and list views for todos.
+- **Custom Multi-Parameter Filter Toolbar**: Filter todos by title, status, priority, and category.
+- **Dynamic Category Management Panel**: Includes collapsible visibility toggles and internal scrollbars.
+- **Drawer-Driven Forms**: Create and update todos and categories using Ant Design drawers.
+- **Client-Side Pagination Handling**: Efficient pagination for todos and categories.
+
+---
+
+## 2. Frontend Step-by-Step Setup & Local Run Instructions
+
+### Setup Guide
+
+1. **Clone the Repository**:
+
+   ```bash
+   git clone https://github.com/Yous1705/todo-fe.git
+   cd todo-fe
+   ```
+
+2. **Install Dependencies**:
+
+   ```bash
+   npm install
+   ```
+
+3. **Configure Environment Variables**:
+   Create a `.env.local` file in the root directory with the following content:
+
+   ```env
+   NEXT_PUBLIC_API_URL=http://localhost:3001/api/
+   ```
+
+4. **Run the Development Server**:
+
+   ```bash
+   npm run dev
+   ```
+
+5. **Build for Production**:
+   ```bash
+   npm run build
+   ```
+
+---
+
+## 3. Technical Decision Questions: Responsive Design
+
+### Tailwind CSS Breakpoints
+
+- Tailwind's `sm:`, `md:`, and `lg:` utility classes are used to adapt layouts for different screen sizes.
+
+### Ant Design Grid System
+
+- The `Row` and `Col` components handle complex transformations from mobile to desktop views.
+- Responsive properties like `xs`, `md`, and `lg` ensure seamless scaling.
+
+### Ant Design Components
+
+- **Card**: Styled for responsiveness.
+- **Space**: Wraps inputs for dynamic alignment.
+- **Drawer**: Adjusts width based on viewport size.
+
+---
+
+## 4. Technical Decision Questions: React Component Structure & State Management
+
+### Component Hierarchy
+
+```plaintext
+layout
+├── DashboardHeader
+├── FilterToolbar
+├── CategoryManager
+├── TodoGridView
+└── TodoListView
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### State Management
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Centralized State**: Managed in `todo.context.tsx` and `category.context.tsx`.
+- **Custom Hooks**: `useTodo` and `useCategory` isolate business logic and API communication.
+- **Prop Drilling Avoidance**: Context API ensures clean data sharing.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## 5. Technical Decision Questions: Data Validation & Error Handling
 
-To learn more about Next.js, take a look at the following resources:
+### Data Validation
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Ant Design Form Rules**: Ensures client-side validation before API calls.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Error Handling
 
-## Deploy on Vercel
+- **API Failures**: Errors are displayed using Ant Design's `App.useApp()` notifications.
+- **Fallback Screens**: Loading and error states are handled gracefully.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 6. Future Improvements & Refactoring (Technical Debt)
+
+- **State Optimization**: Move filtering parameters to URL query strings for shareable routes.
+- **Micro-Interactions**: Add animations for smoother user experience.
+
+---
+
+## License
+
+Yous Sibarani: [youssibarani17@gmail.com](mailto:youssibarani17@gmail.com)
