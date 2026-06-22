@@ -22,7 +22,7 @@ export default function TodoGridView({
       {todo.map((item) => (
         <Col xs={24} md={12} lg={8} key={item.id}>
           <Card
-            className="border-slate-200/80 hover:border-slate-300 hover:shadow-md transition-all duration-200 h-full group"
+            className="border-slate-200/80 hover:border-slate-300 hover:shadow-md transition-all duration-200 h-full group overflow-hidden"
             style={{
               borderLeft: `5px solid ${item.category?.color || "#CBD5E1"}`,
             }}
@@ -37,10 +37,21 @@ export default function TodoGridView({
             }}
           >
             <div className="flex-1 space-y-3">
+              {item.images?.length > 0 && (
+                <div className="mb-4 bg-slate-50 rounded-lg border border-slate-200 p-2">
+                  <img
+                    src={item.images[0].url}
+                    alt={item.title}
+                    className="w-full max-h-64 object-contain rounded-lg"
+                  />
+                </div>
+              )}
+
               <div className="flex items-start justify-between gap-4">
                 <h3 className="font-semibold text-slate-900 text-base m-0 line-clamp-1 group-hover:text-blue-600 transition-colors">
                   {item.title}
                 </h3>
+
                 <Space
                   size={4}
                   className="opacity-80 sm:opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0"
@@ -52,6 +63,7 @@ export default function TodoGridView({
                     onClick={() => handleOpenUpdate(item)}
                     className="text-slate-400 hover:text-blue-600"
                   />
+
                   <Button
                     type="text"
                     size="small"
@@ -64,7 +76,7 @@ export default function TodoGridView({
                 </Space>
               </div>
 
-              <p className="text-slate-500 text-sm line-clamp-2 leading-relaxed m-0">
+              <p className="text-slate-500 text-sm line-clamp-3 leading-relaxed m-0">
                 {item.description || "No description provided."}
               </p>
             </div>
@@ -79,6 +91,7 @@ export default function TodoGridView({
                       : "No Date"}
                   </span>
                 </div>
+
                 {item.category?.name && (
                   <span className="bg-slate-100 text-slate-600 font-medium px-2 py-0.5 rounded text-[11px]">
                     {item.category.name}
@@ -93,6 +106,7 @@ export default function TodoGridView({
                 >
                   {item.status === "COMPLETED" ? "Completed" : "Incomplete"}
                 </Tag>
+
                 <Tag
                   color={
                     item.priority === "HIGH"

@@ -38,6 +38,25 @@ export default function TodoListView({
         </div>
       ),
     },
+
+    {
+      title: "Image",
+      key: "image",
+      width: 120,
+      render: (_: unknown, item: Todo) =>
+        item.images?.length > 0 ? (
+          <div className="flex justify-center">
+            <img
+              src={item.images[0].url}
+              alt={item.title}
+              className="w-20 h-20 object-contain rounded-lg border border-slate-200 bg-slate-50 p-1"
+            />
+          </div>
+        ) : (
+          <span className="text-slate-400">-</span>
+        ),
+    },
+
     {
       title: "Description",
       dataIndex: "description",
@@ -45,6 +64,7 @@ export default function TodoListView({
       className: "text-slate-500 max-w-xs truncate",
       render: (text: string) => text || "-",
     },
+
     {
       title: "Due Date",
       dataIndex: "due_date",
@@ -56,6 +76,7 @@ export default function TodoListView({
         </Space>
       ),
     },
+
     {
       title: "Category",
       dataIndex: ["category", "name"],
@@ -69,6 +90,7 @@ export default function TodoListView({
           "-"
         ),
     },
+
     {
       title: "Status",
       dataIndex: "status",
@@ -82,6 +104,7 @@ export default function TodoListView({
         </Tag>
       ),
     },
+
     {
       title: "Priority",
       dataIndex: "priority",
@@ -101,11 +124,12 @@ export default function TodoListView({
         </Tag>
       ),
     },
+
     {
       title: "Actions",
       key: "actions",
       width: 100,
-      render: (_: any, item: Todo) => (
+      render: (_: unknown, item: Todo) => (
         <Space size={2}>
           <Button
             type="text"

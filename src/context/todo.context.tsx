@@ -23,7 +23,7 @@ interface TodoContextType {
 
   fetchTodo: (page?: number, limit?: number) => Promise<void>;
   fetchTodosByCategory: (categoryId: number) => Promise<void>;
-  createTodo: (todo: TodoDto) => Promise<void>;
+  createTodo: (todo: TodoDto, files?: File[]) => Promise<void>;
   updateTodo: (id: number, todo: Partial<TodoDto>) => Promise<void>;
   deleteTodo: (id: number) => Promise<void>;
 
@@ -114,8 +114,8 @@ export function TodoProvider({ children }: TodoProviderProps) {
     await fetchTodo(1, limit);
   };
 
-  const createTodo = async (todo: TodoDto) => {
-    await todoService.create(todo);
+  const createTodo = async (todo: TodoDto, files?: File[]) => {
+    await todoService.create(todo, files);
     await fetchTodo();
   };
 

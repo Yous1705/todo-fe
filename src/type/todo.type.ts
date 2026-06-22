@@ -6,11 +6,14 @@ export interface Todo {
   status: "INCOMPLETE" | "COMPLETED";
   priority: "LOW" | "MEDIUM" | "HIGH";
   due_date: Dayjs | undefined;
+
   category: {
     id: number;
     name: string;
     color: string;
   };
+
+  images: TodoImage[];
 }
 
 export interface GetTodosParams {
@@ -26,12 +29,21 @@ export type TodoDto = {
   description: string;
   status: StatusEnum;
   priority: PriorityEnum;
-  due_date: Dayjs;
+  due_date: string;
   categoryId: number;
+  images?: File[];
 };
 
 export interface SearchTodoParams {
   title?: string;
   status?: StatusEnum;
   priority?: PriorityEnum;
+}
+
+export interface TodoImage {
+  id: number;
+  url: string;
+  todoId: number;
+  createdAt: string;
+  updatedAt: string;
 }

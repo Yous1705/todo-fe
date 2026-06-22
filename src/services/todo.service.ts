@@ -29,8 +29,27 @@ export const todoService = {
     return response.data.data;
   },
 
-  async create(dto: TodoDto): Promise<Todo> {
-    const response = await axiosInstance.post<ApiResponse<Todo>>("todo", dto);
+  async create(dto: TodoDto, files?: File[]): Promise<Todo> {
+    const formData = new FormData();
+
+    formData.append("title", dto.title);
+    formData.append("description", dto.description);
+    formData.append("priority", dto.priority);
+    formData.append("status", dto.status);
+    formData.append("categoryId", dto.categoryId.toString());
+
+    if (dto.due_date) {
+      formData.append("due_date", dto.due_date.toString());
+    }
+
+    files?.forEach((file) => {
+      formData.append("images", file);
+    });
+
+    const response = await axiosInstance.post<ApiResponse<Todo>>(
+      "todo",
+      formData,
+    );
 
     return response.data.data;
   },
