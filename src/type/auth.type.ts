@@ -13,10 +13,13 @@ export interface LoginResponse {
   access_token: string;
 }
 
+export interface RegisterResponse {
+  user: User;
+}
+
 export interface User {
   id: number;
   email: string;
   name: string;
-  createdAt: Date;
-  updatedAt: Date;
+  password: string;
 }

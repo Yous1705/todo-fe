@@ -1,10 +1,15 @@
 import axiosInstance from "@/lib/axios";
 import { ApiResponse } from "@/type/api.type";
-import { LoginDto, LoginResponse, RegisterDto } from "@/type/auth.type";
+import {
+  LoginDto,
+  LoginResponse,
+  RegisterDto,
+  RegisterResponse,
+} from "@/type/auth.type";
 
 export const authService = {
-  async register(payload: RegisterDto): Promise<ApiResponse<null>> {
-    const response = await axiosInstance.post<ApiResponse<null>>(
+  async register(payload: RegisterDto): Promise<ApiResponse<RegisterResponse>> {
+    const response = await axiosInstance.post<ApiResponse<RegisterResponse>>(
       "auth/register",
       payload,
     );
