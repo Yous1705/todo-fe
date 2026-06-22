@@ -58,6 +58,7 @@ export function AuthModal({
                   Nama Lengkap
                 </label>
                 <input
+                  name="name"
                   type="text"
                   required
                   placeholder="Jane Doe"
@@ -71,6 +72,7 @@ export function AuthModal({
                 Alamat Email
               </label>
               <input
+                name="email"
                 type="email"
                 required
                 placeholder="nama@perusahaan.com"
@@ -83,6 +85,7 @@ export function AuthModal({
                 Kata Sandi
               </label>
               <input
+                name="password"
                 type="password"
                 required
                 placeholder="••••••••"

@@ -4,6 +4,7 @@ import "./globals.css";
 import { TodoProvider } from "@/context/todo.context";
 import { CategoryProvider } from "@/context/category.context";
 import { AntdAppProvider } from "@/component/AntdAppProvider";
+import { AuthProvider } from "@/context/auth.context";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,9 +32,11 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <CategoryProvider>
-          <TodoProvider>{children}</TodoProvider>
-        </CategoryProvider>
+        <AuthProvider>
+          <CategoryProvider>
+            <TodoProvider>{children}</TodoProvider>
+          </CategoryProvider>
+        </AuthProvider>
       </body>
     </html>
   );

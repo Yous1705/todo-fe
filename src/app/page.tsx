@@ -12,6 +12,9 @@ import { CTASection } from "../components/landing/CTASection";
 import { Footer } from "../components/landing/Footer";
 import { Toast } from "../components/ui/Toast";
 import { AuthModal } from "../components/ui/AuthModal";
+import { useAuth } from "@/hooks/useAuth";
+import { authService } from "@/services/auth.service";
+import { useRouter } from "next/navigation";
 
 type AuthType = "login" | "register";
 
@@ -31,6 +34,8 @@ export default function HomePage() {
     message: "",
     type: "success",
   });
+  const { login } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 15);
@@ -38,20 +43,51 @@ export default function HomePage() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const triggerToast = (message: string, type: "success" | "info" = "success") => {
+  const triggerToast = (
+    message: string,
+    type: "success" | "info" = "success",
+  ) => {
     setToast({ show: true, message, type });
     setTimeout(() => setToast((prev) => ({ ...prev, show: false })), 4000);
   };
 
-  const handleAuthSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleAuthSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setAuthModalOpen(false);
-    triggerToast(
-      authModalType === "login"
-        ? "Berhasil masuk ke workspace TaskFlow!"
-        : "Selamat datang! Ruang kerja TaskFlow Anda telah siap.",
-      "success",
-    );
+
+    const formData = new FormData(event.currentTarget);
+
+    try {
+      if (authModalType === "login") {
+        const result = await authService.login({
+          email: formData.get("email") as string,
+          password: formData.get("password") as string,
+        });
+
+        login(result.access_token);
+
+        triggerToast("Berhasil masuk ke workspace TaskFlow!", "success");
+        setAuthModalOpen(false);
+
+        router.push("/todo");
+      } else {
+        await authService.register({
+          name: formData.get("name") as string,
+          email: formData.get("email") as string,
+          password: formData.get("password") as string,
+        });
+
+        triggerToast("Akun berhasil dibuat, silakan login.", "success");
+
+        setAuthModalType("login");
+        return;
+      }
+
+      setAuthModalOpen(false);
+    } catch (error: any) {
+      // triggerToast("Email atau password tidak valid.", "info");
+      console.log("error response: ", error.response?.data);
+      console.log("error: ", error);
+    }
   };
 
   const handleOpenAuth = (type: AuthType) => {

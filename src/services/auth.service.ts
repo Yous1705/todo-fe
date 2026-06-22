@@ -17,8 +17,8 @@ export const authService = {
     return response.data;
   },
 
-  async login(payload: LoginDto): Promise<ApiResponse<LoginResponse>> {
-    const response = await axiosInstance.post<ApiResponse<LoginResponse>>(
+  async login(payload: LoginDto): Promise<LoginResponse> {
+    const response = await axiosInstance.post<LoginResponse>(
       "auth/login",
       payload,
     );
