@@ -1,4 +1,5 @@
 import { Dayjs } from "dayjs";
+import { TaskList } from "./task.type";
 export interface Todo {
   id: number;
   title: string;
@@ -14,6 +15,7 @@ export interface Todo {
   };
 
   images: TodoImage[];
+  task: TaskList[];
 }
 
 export interface GetTodosParams {

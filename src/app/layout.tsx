@@ -5,6 +5,7 @@ import { TodoProvider } from "@/context/todo.context";
 import { CategoryProvider } from "@/context/category.context";
 import { AntdAppProvider } from "@/component/AntdAppProvider";
 import { AuthProvider } from "@/context/auth.context";
+import { TaskProvider } from "@/context/task.context";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,7 +35,9 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         <AuthProvider>
           <CategoryProvider>
-            <TodoProvider>{children}</TodoProvider>
+            <TodoProvider>
+              <TaskProvider>{children}</TaskProvider>
+            </TodoProvider>
           </CategoryProvider>
         </AuthProvider>
       </body>

@@ -1,8 +1,10 @@
+"use client";
 import React from "react";
 import { Table, Space, Button, Tag } from "antd";
 import { Calendar, Edit3, Trash2 } from "lucide-react";
 import dayjs from "dayjs";
 import { Todo } from "@/type/todo.type";
+import { useRouter } from "next/navigation";
 
 interface TodoListViewProps {
   todo: Todo[];
@@ -17,6 +19,7 @@ export default function TodoListView({
   handleOpenUpdate,
   handleDelete,
 }: TodoListViewProps) {
+  const router = useRouter();
   const columns = [
     {
       title: "Task Title",
@@ -28,6 +31,7 @@ export default function TodoListView({
           style={{
             borderLeft: `4px solid ${item.category?.color || "#CBD5E1"}`,
           }}
+          onClick={() => router.push(`/todo/${item.id}`)}
         >
           <span
             className="font-semibold text-slate-900 cursor-pointer hover:text-blue-600 transition-colors"

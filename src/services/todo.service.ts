@@ -18,6 +18,14 @@ export const todoService = {
     return response.data.data;
   },
 
+  async findOne(todoId: number): Promise<ApiResponse<Todo>> {
+    const response = await axiosInstance.get<ApiResponse<Todo>>(
+      `todo/${todoId}`,
+    );
+
+    return response.data;
+  },
+
   async search(params: SearchTodoParams): Promise<Todo[]> {
     const response = await axiosInstance.get<ApiResponse<Todo[]>>(
       "/todo/search",

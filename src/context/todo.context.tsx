@@ -1,6 +1,7 @@
 "use client";
 
 import { categoryService } from "@/services/category.service";
+import { taskService } from "@/services/task.service";
 import { todoService } from "@/services/todo.service";
 import { PaginationMeta } from "@/type/api.type";
 import { SearchTodoParams, Todo, TodoDto } from "@/type/todo.type";
@@ -23,6 +24,7 @@ interface TodoContextType {
 
   fetchTodo: (page?: number, limit?: number) => Promise<void>;
   fetchTodosByCategory: (categoryId: number) => Promise<void>;
+
   createTodo: (todo: TodoDto, files?: File[]) => Promise<void>;
   updateTodo: (id: number, todo: Partial<TodoDto>) => Promise<void>;
   deleteTodo: (id: number) => Promise<void>;
@@ -46,6 +48,7 @@ interface TodoProviderProps {
 
 export function TodoProvider({ children }: TodoProviderProps) {
   const [todo, setTodo] = useState<Todo[]>([]);
+  const [task, setTask] = useState<Todo>();
   const [meta, setMeta] = useState<PaginationMeta | null>(null);
   const [searchKeyword, setSearchKeyword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -68,6 +71,22 @@ export function TodoProvider({ children }: TodoProviderProps) {
       setMeta(result.meta);
     } catch (error) {
       setError("faild to fetch Todo");
+      console.log("error : ", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchTask = async (todoId: number): Promise<void> => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const response = await todoService.findOne(todoId);
+
+      setTask(response.data);
+    } catch (error) {
+      setError("Failed to fetch tasks");
       console.log("error : ", error);
     } finally {
       setLoading(false);

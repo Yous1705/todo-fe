@@ -1,8 +1,10 @@
+"use client";
 import React from "react";
 import { Row, Col, Card, Space, Button, Tag } from "antd";
 import { Edit3, Trash2, Calendar } from "lucide-react";
 import dayjs from "dayjs";
 import { Todo } from "@/type/todo.type";
+import { useRouter } from "next/navigation";
 
 interface TodoGridViewProps {
   todo: Todo[];
@@ -17,6 +19,7 @@ export default function TodoGridView({
   handleOpenUpdate,
   handleDelete,
 }: TodoGridViewProps) {
+  const router = useRouter();
   return (
     <Row gutter={[20, 20]}>
       {todo.map((item) => (
@@ -35,6 +38,7 @@ export default function TodoGridView({
                 justifyContent: "space-between",
               },
             }}
+            onClick={() => router.push(`/todo/${item.id}`)}
           >
             <div className="flex-1 space-y-3">
               {item.images?.length > 0 && (
