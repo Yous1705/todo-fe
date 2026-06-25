@@ -6,7 +6,7 @@ import {
   PauseCircleOutlined,
 } from "@ant-design/icons";
 import type { TaskList } from "@/type/task.type";
-import { calculateDuration, formatDuration } from "../utils/taskTime";
+import { calculateDuration, formatDuration } from "../../utils/taskTime";
 
 interface TaskCardProps {
   task: TaskList;

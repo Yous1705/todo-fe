@@ -10,13 +10,13 @@ import {
   FolderOpenOutlined,
 } from "@ant-design/icons";
 
-import TodoDetailCard from "@/app/todo/components/TodoDetailCard";
-import TaskFilters from "@/app/todo/components/TaskFilters";
-import TaskCard from "@/app/todo/components/TaskCard";
-import CreateTaskModal from "@/app/todo/components/CreateTaskModal";
-import UpdateTaskModal from "@/app/todo/components/UpdateTaskModal";
-import CompleteTaskModal from "@/app/todo/components/CompleteTaskModal";
-import { useTaskTimer } from "@/app/todo/hooks/useTaskTimer";
+import TodoDetailCard from "@/components/task-components/TodoDetailCard";
+import TaskFilters from "@/components/task-components/TaskFilters";
+import TaskCard from "@/components/task-components/TaskCard";
+import CreateTaskModal from "@/components/task-components/CreateTaskModal";
+import UpdateTaskModal from "@/components/task-components/UpdateTaskModal";
+import CompleteTaskModal from "@/components/task-components/CompleteTaskModal";
+import { useTaskTimer } from "@/hooks/useTaskTimer";
 import type { TaskDto, TaskList } from "@/type/task.type";
 
 export default function TaskPage() {

@@ -38,7 +38,6 @@ export default function TodoGridView({
                 justifyContent: "space-between",
               },
             }}
-            onClick={() => router.push(`/todo/${item.id}`)}
           >
             <div className="flex-1 space-y-3">
               {item.images?.length > 0 && (
@@ -52,7 +51,10 @@ export default function TodoGridView({
               )}
 
               <div className="flex items-start justify-between gap-4">
-                <h3 className="font-semibold text-slate-900 text-base m-0 line-clamp-1 group-hover:text-blue-600 transition-colors">
+                <h3
+                  className="font-semibold text-slate-900 text-base m-0 line-clamp-1 group-hover:text-blue-600 transition-colors"
+                  onClick={() => router.push(`/todo/${item.id}`)}
+                >
                   {item.title}
                 </h3>
 
