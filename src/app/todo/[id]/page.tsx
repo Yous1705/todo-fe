@@ -1,27 +1,23 @@
 "use client";
 
-import { useTask } from "@/hooks/useTask";
+import React, { useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import dayjs from "dayjs";
-import type { UploadFile } from "antd/es/upload/interface";
-
+import { useTask } from "@/hooks/useTask";
+import { ConfigProvider, theme, Spin, notification, Form, Button } from "antd";
 import {
-  Card,
-  Tag,
-  Button,
-  Modal,
-  Form,
-  Input,
-  Space,
-  Image,
-  Spin,
-  Upload,
-  Select,
-} from "antd";
+  PlusOutlined,
+  ArrowLeftOutlined,
+  FolderOpenOutlined,
+} from "@ant-design/icons";
 
-import { PlusOutlined, EditOutlined } from "@ant-design/icons";
-import { TaskDto, TaskList } from "@/type/task.type";
+import TodoDetailCard from "@/app/todo/components/TodoDetailCard";
+import TaskFilters from "@/app/todo/components/TaskFilters";
+import TaskCard from "@/app/todo/components/TaskCard";
+import CreateTaskModal from "@/app/todo/components/CreateTaskModal";
+import UpdateTaskModal from "@/app/todo/components/UpdateTaskModal";
+import CompleteTaskModal from "@/app/todo/components/CompleteTaskModal";
+import { useTaskTimer } from "@/app/todo/hooks/useTaskTimer";
+import type { TaskDto, TaskList } from "@/type/task.type";
 
 export default function TaskPage() {
   const params = useParams();
@@ -36,6 +32,8 @@ export default function TaskPage() {
     loading,
     query,
     setQuery,
+    startTask,
+    pauseTask,
   } = useTask();
 
   const [openCreate, setOpenCreate] = useState(false);
@@ -47,6 +45,8 @@ export default function TaskPage() {
   const [form] = Form.useForm();
   const [updateForm] = Form.useForm();
 
+  const tick = useTaskTimer(todo?.task);
+
   useEffect(() => {
     if (id) {
       fetchTodoDetail(id);
@@ -55,29 +55,35 @@ export default function TaskPage() {
 
   const handleCreate = async (values: TaskDto) => {
     await createTask(id, values);
-
     setOpenCreate(false);
     form.resetFields();
+    notification.success({
+      message: "Task Created",
+      description: "Successfully added a new subtask to current scope.",
+      placement: "bottomRight",
+    });
   };
 
   const handleOpenUpdate = (task: TaskList) => {
     setSelectedTask(task);
-
     updateForm.setFieldsValue({
       title: task.title,
       description: task.description,
     });
-
     setOpenUpdate(true);
   };
 
   const handleUpdate = async (values: TaskDto) => {
     if (!selectedTask) return;
-
     await updateTask(id, selectedTask.id, values);
-
     setOpenUpdate(false);
     setSelectedTask(null);
+    notification.success({
+      message: "Task Updated",
+      description:
+        "Changes have been successfully synchronized to base layers.",
+      placement: "bottomRight",
+    });
   };
 
   const handleOpenComplete = (task: TaskList) => {
@@ -88,273 +94,180 @@ export default function TaskPage() {
 
   const handleComplete = async () => {
     if (!selectedTask) return;
-
     try {
       await completeTask(id, selectedTask.id, completeFiles);
-
       setOpenComplete(false);
       setSelectedTask(null);
       setCompleteFiles([]);
+      notification.success({
+        message: "Task Completed",
+        description: "Milestone saved and evidence submitted safely.",
+        placement: "bottomRight",
+      });
     } catch (error) {
       console.error(error);
     }
   };
 
+  const stats = useMemo(() => {
+    const tasks = todo?.task || [];
+    const total = tasks.length;
+    const completed = tasks.filter((t) => t.status === "COMPLETED").length;
+    const active = tasks.filter(
+      (t) => t.isRunning && t.status !== "COMPLETED",
+    ).length;
+    const idle = total - completed - active;
+    const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+    let motivation = "Not Started";
+    let motivationColor = "text-slate-400";
+    if (percentage === 100) {
+      motivation = "Completed — Scope fulfilled! 🚀";
+      motivationColor = "text-emerald-400";
+    } else if (percentage >= 50) {
+      motivation = "Almost There — Over halfway done! 🔥";
+      motivationColor = "text-amber-400";
+    } else if (percentage > 0) {
+      motivation = "In Progress — Making solid gains! ⚡";
+      motivationColor = "text-blue-400";
+    } else {
+      motivation = "Not Started — Initialize task timers! 🎯";
+      motivationColor = "text-slate-500";
+    }
+
+    return {
+      total,
+      completed,
+      active,
+      idle,
+      percentage,
+      motivation,
+      motivationColor,
+    };
+  }, [todo?.task]);
+
   if (loading) {
     return (
-      <div className="flex justify-center p-10">
-        <Spin />
+      <div className="flex flex-col items-center justify-center min-h-screen bg-[#181A20] text-white">
+        <Spin size="large" />
+        <p className="text-sm text-[#B0BEC5] mt-4 animate-pulse">
+          Syncing application services...
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="max-w-5xl mx-auto p-6 space-y-6">
-      <Card title="Todo Detail">
-        <Space direction="vertical" size="small">
-          <h2 className="text-xl font-semibold">{todo?.title}</h2>
+    <ConfigProvider
+      theme={{
+        algorithm: theme.darkAlgorithm,
+        token: {
+          colorPrimary: "#1976D2",
+          colorBgContainer: "#23272F",
+          colorBgLayout: "#181A20",
+          colorTextBase: "#FFFFFF",
+          colorTextSecondary: "#B0BEC5",
+          borderRadius: 12,
+        },
+      }}
+    >
+      <div className="min-h-screen bg-[#181A20] text-white font-sans antialiased pb-12">
+        <div className="border-b border-[#2D3139] bg-[#181A20]/80 backdrop-blur sticky top-0 z-40">
+          <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <button className="flex items-center justify-center p-2 rounded-lg bg-[#23272F] hover:bg-[#2D3139] border border-[#2D3139] text-[#B0BEC5] transition-all">
+                <ArrowLeftOutlined className="text-xs" />
+              </button>
+              <div className="flex items-center space-x-2 text-xs font-semibold uppercase tracking-wider text-[#B0BEC5]">
+                <span>Workspace</span>
+                <span className="text-[#2D3139]">/</span>
+                <span className="text-[#1976D2] bg-[#1976D2]/10 px-2 py-0.5 rounded">
+                  Scope Backlog
+                </span>
+              </div>
+            </div>
 
-          <p>{todo?.description}</p>
-
-          <Space wrap>
-            <Tag color="blue">{todo?.status}</Tag>
-
-            <Tag color="orange">{todo?.priority}</Tag>
-
-            <Tag color="green">{todo?.category?.name}</Tag>
-          </Space>
-
-          <div>
-            Due Date:{" "}
-            {todo?.due_date
-              ? dayjs(todo.due_date).format("DD MMM YYYY")
-              : "No Date"}
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={() => setOpenCreate(true)}
+              className="bg-[#1976D2] hover:bg-[#2196F3] border-none font-semibold h-9"
+            >
+              Create Task
+            </Button>
           </div>
-        </Space>
-      </Card>
+        </div>
 
-      <Card>
-        <Space wrap>
-          <Input.Search
-            placeholder="Search task..."
-            allowClear
-            style={{ width: 250 }}
-            onSearch={(value) =>
-              setQuery((prev) => ({
-                ...prev,
-                search: value,
-              }))
-            }
-          />
+        <div className="max-w-5xl mx-auto p-4 sm:p-6 space-y-6">
+          <TodoDetailCard todo={todo} stats={stats} />
+          <TaskFilters query={query} setQuery={setQuery} />
 
-          <Select
-            placeholder="Status"
-            style={{ width: 180 }}
-            allowClear
-            value={query.status}
-            onChange={(value) =>
-              setQuery((prev) => ({
-                ...prev,
-                status: value,
-              }))
-            }
-            options={[
-              {
-                label: "Incomplete",
-                value: "INCOMPLETE",
-              },
-              {
-                label: "Completed",
-                value: "COMPLETED",
-              },
-            ]}
-          />
-
-          <Select
-            placeholder="Sort"
-            style={{ width: 180 }}
-            value={query.sort}
-            onChange={(value) =>
-              setQuery((prev) => ({
-                ...prev,
-                sort: value,
-              }))
-            }
-            options={[
-              {
-                label: "Newest",
-                value: "newest",
-              },
-              {
-                label: "Oldest",
-                value: "oldest",
-              },
-              {
-                label: "Alphabetical",
-                value: "alphabetical",
-              },
-            ]}
-          />
-        </Space>
-      </Card>
-
-      <div className="flex justify-between items-center">
-        <h2 className="text-lg font-semibold">Tasks</h2>
-
-        <Button
-          type="primary"
-          icon={<PlusOutlined />}
-          onClick={() => setOpenCreate(true)}
-        >
-          Create Task
-        </Button>
-      </div>
-
-      <div className="grid gap-4">
-        {todo?.task.map((task) => (
-          <Card
-            key={task.id}
-            extra={
-              <Space>
-                <Button
-                  icon={<EditOutlined />}
-                  onClick={() => handleOpenUpdate(task)}
-                >
-                  Edit
-                </Button>
-
-                {task.status !== "COMPLETED" && (
-                  <Button
-                    type="primary"
-                    onClick={() => handleOpenComplete(task)}
-                  >
-                    Complete
-                  </Button>
-                )}
-              </Space>
-            }
-          >
-            <Space direction="vertical" className="w-full">
-              <h3 className="font-semibold">{task.title}</h3>
-
-              <p>{task.description}</p>
-
-              <Tag
-                color={
-                  task.status === "COMPLETED"
-                    ? "green"
-                    : task.status === "INCOMPLETE"
-                      ? "blue"
-                      : "orange"
-                }
-              >
-                {task.status}
-              </Tag>
-
-              <Space wrap>
-                {task.taskImages?.map((image) => (
-                  <Image
-                    key={image.id}
-                    src={image.url}
-                    width={100}
-                    height={100}
-                    alt="task"
+          <div className="space-y-4">
+            {todo?.task && todo.task.length > 0 ? (
+              <div className="grid grid-cols-1 gap-4">
+                {todo.task.map((task) => (
+                  <TaskCard
+                    key={task.id}
+                    task={task}
+                    tick={tick}
+                    onEdit={handleOpenUpdate}
+                    onComplete={handleOpenComplete}
+                    onStart={() => startTask(id, task.id)}
+                    onPause={() => pauseTask(id, task.id)}
                   />
                 ))}
-              </Space>
-            </Space>
-          </Card>
-        ))}
+              </div>
+            ) : (
+              <div className="bg-[#23272F] border border-[#2D3139] rounded-2xl p-12 text-center flex flex-col items-center justify-center space-y-5">
+                <FolderOpenOutlined className="text-4xl text-[#B0BEC5]/20" />
+                <div className="space-y-1">
+                  <h3 className="text-base font-bold text-white">
+                    No tasks created yet.
+                  </h3>
+                  <p className="text-xs text-[#B0BEC5]/60 max-w-xs mx-auto">
+                    Adjust search queries or draft a new atomic action item to
+                    deploy tasks to this backlog.
+                  </p>
+                </div>
+                <Button
+                  type="primary"
+                  icon={<PlusOutlined />}
+                  onClick={() => setOpenCreate(true)}
+                  className="bg-[#1976D2] border-none font-bold"
+                >
+                  Create Task
+                </Button>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <CreateTaskModal
+          open={openCreate}
+          onClose={() => setOpenCreate(false)}
+          form={form}
+          onCreate={handleCreate}
+        />
+        <UpdateTaskModal
+          open={openUpdate}
+          onClose={() => setOpenUpdate(false)}
+          form={updateForm}
+          onUpdate={handleUpdate}
+        />
+        <CompleteTaskModal
+          open={openComplete}
+          loading={loading}
+          selectedTask={selectedTask}
+          completeFiles={completeFiles}
+          setCompleteFiles={setCompleteFiles}
+          onClose={() => {
+            setOpenComplete(false);
+            setSelectedTask(null);
+            setCompleteFiles([]);
+          }}
+          onComplete={handleComplete}
+        />
       </div>
-
-      <Modal
-        title="Create Task"
-        open={openCreate}
-        onOk={() => form.submit()}
-        onCancel={() => setOpenCreate(false)}
-      >
-        <Form form={form} layout="vertical" onFinish={handleCreate}>
-          <Form.Item
-            name="title"
-            label="Title"
-            rules={[
-              {
-                required: true,
-              },
-            ]}
-          >
-            <Input />
-          </Form.Item>
-
-          <Form.Item name="description" label="Description">
-            <Input.TextArea rows={4} />
-          </Form.Item>
-        </Form>
-      </Modal>
-
-      <Modal
-        title="Update Task"
-        open={openUpdate}
-        onOk={() => updateForm.submit()}
-        onCancel={() => setOpenUpdate(false)}
-      >
-        <Form form={updateForm} layout="vertical" onFinish={handleUpdate}>
-          <Form.Item
-            name="title"
-            label="Title"
-            rules={[
-              {
-                required: true,
-              },
-            ]}
-          >
-            <Input />
-          </Form.Item>
-
-          <Form.Item name="description" label="Description">
-            <Input.TextArea rows={4} />
-          </Form.Item>
-        </Form>
-      </Modal>
-
-      <Modal
-        title="Complete Task"
-        open={openComplete}
-        confirmLoading={loading}
-        onOk={handleComplete}
-        onCancel={() => {
-          setOpenComplete(false);
-          setSelectedTask(null);
-          setCompleteFiles([]);
-        }}
-      >
-        <Space direction="vertical" className="w-full">
-          <p>
-            Complete task:
-            <strong> {selectedTask?.title}</strong>
-          </p>
-
-          <Upload
-            multiple
-            beforeUpload={(file) => {
-              setCompleteFiles((prev) => [...prev, file]);
-
-              return false;
-            }}
-            onRemove={(file) => {
-              setCompleteFiles((prev) =>
-                prev.filter((f) => f.name !== file.name),
-              );
-            }}
-          >
-            <Button>Select Images</Button>
-          </Upload>
-
-          <p className="text-gray-500 text-sm">
-            Upload evidence images before marking this task as completed.
-          </p>
-        </Space>
-      </Modal>
-    </div>
+    </ConfigProvider>
   );
 }

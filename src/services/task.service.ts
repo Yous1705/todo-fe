@@ -21,6 +21,22 @@ export const taskService = {
     return response.data;
   },
 
+  async start(taskId: number): Promise<ApiResponse<null>> {
+    const response = await axiosInstance.patch<ApiResponse<null>>(
+      `task/${taskId}/start`,
+    );
+
+    return response.data;
+  },
+
+  async pause(taskId: number): Promise<ApiResponse<null>> {
+    const response = await axiosInstance.patch<ApiResponse<null>>(
+      `task/${taskId}/pause`,
+    );
+
+    return response.data;
+  },
+
   async complete(taskId: number, files?: File[]): Promise<ApiResponse<null>> {
     const formData = new FormData();
 

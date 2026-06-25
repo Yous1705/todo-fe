@@ -19,6 +19,8 @@ interface TaskContextType {
     taskId: number,
     payload: TaskDto,
   ) => Promise<void>;
+  startTask: (todoId: number, taskId: number) => Promise<void>;
+  pauseTask: (todoId: number, taskId: number) => Promise<void>;
   completeTask: (
     todoId: number,
     taskId: number,
@@ -113,6 +115,30 @@ export function TaskProvider({ children }: TaskProviderProps) {
     }
   };
 
+  const startTask = async (todoId: number, taskId: number): Promise<void> => {
+    try {
+      setLoading(true);
+
+      await taskService.start(taskId);
+
+      await fetchTodoDetail(todoId);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const pauseTask = async (todoId: number, taskId: number): Promise<void> => {
+    try {
+      setLoading(true);
+
+      await taskService.pause(taskId);
+
+      await fetchTodoDetail(todoId);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <TaskContext.Provider
       value={{
@@ -124,6 +150,8 @@ export function TaskProvider({ children }: TaskProviderProps) {
         fetchTodoDetail,
         createTask,
         updateTask,
+        startTask,
+        pauseTask,
         completeTask,
       }}
     >

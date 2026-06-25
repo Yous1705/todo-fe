@@ -4,8 +4,12 @@ export interface TaskList {
   id: number;
   todoId: number;
   title: string;
-  status: TaskStatusEnum;
   description: string;
+  status: TaskStatusEnum;
+  isRunning: boolean;
+  currentStartedAt?: string | null;
+  totalDuration: number;
+  completedAt?: string | null;
   taskImages: TaskImages[];
 }
 
