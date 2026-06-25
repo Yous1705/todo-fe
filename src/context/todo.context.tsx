@@ -4,6 +4,7 @@ import { categoryService } from "@/services/category.service";
 import { taskService } from "@/services/task.service";
 import { todoService } from "@/services/todo.service";
 import { PaginationMeta } from "@/type/api.type";
+import { TodoTaskQuery } from "@/type/task.type";
 import { SearchTodoParams, Todo, TodoDto } from "@/type/todo.type";
 import {
   createContext,
@@ -24,6 +25,8 @@ interface TodoContextType {
 
   fetchTodo: (page?: number, limit?: number) => Promise<void>;
   fetchTodosByCategory: (categoryId: number) => Promise<void>;
+  query: TodoTaskQuery;
+  setQuery: React.Dispatch<React.SetStateAction<TodoTaskQuery>>;
 
   createTodo: (todo: TodoDto, files?: File[]) => Promise<void>;
   updateTodo: (id: number, todo: Partial<TodoDto>) => Promise<void>;
@@ -53,6 +56,9 @@ export function TodoProvider({ children }: TodoProviderProps) {
   const [searchKeyword, setSearchKeyword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [query, setQuery] = useState<TodoTaskQuery>({
+    sort: "newest",
+  });
 
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);

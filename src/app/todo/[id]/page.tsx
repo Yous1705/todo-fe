@@ -4,6 +4,7 @@ import { useTask } from "@/hooks/useTask";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import dayjs from "dayjs";
+import type { UploadFile } from "antd/es/upload/interface";
 
 import {
   Card,
@@ -12,10 +13,11 @@ import {
   Modal,
   Form,
   Input,
-  Select,
   Space,
   Image,
   Spin,
+  Upload,
+  Select,
 } from "antd";
 
 import { PlusOutlined, EditOutlined } from "@ant-design/icons";
@@ -25,10 +27,21 @@ export default function TaskPage() {
   const params = useParams();
   const id = Number(params.id);
 
-  const { todo, fetchTodoDetail, createTask, updateTask, loading } = useTask();
+  const {
+    todo,
+    fetchTodoDetail,
+    createTask,
+    updateTask,
+    completeTask,
+    loading,
+    query,
+    setQuery,
+  } = useTask();
 
   const [openCreate, setOpenCreate] = useState(false);
   const [openUpdate, setOpenUpdate] = useState(false);
+  const [openComplete, setOpenComplete] = useState(false);
+  const [completeFiles, setCompleteFiles] = useState<File[]>([]);
   const [selectedTask, setSelectedTask] = useState<TaskList | null>(null);
 
   const [form] = Form.useForm();
@@ -38,11 +51,9 @@ export default function TaskPage() {
     if (id) {
       fetchTodoDetail(id);
     }
-  }, [id]);
+  }, [id, query]);
 
   const handleCreate = async (values: TaskDto) => {
-    console.log(values);
-
     await createTask(id, values);
 
     setOpenCreate(false);
@@ -66,6 +77,27 @@ export default function TaskPage() {
     await updateTask(id, selectedTask.id, values);
 
     setOpenUpdate(false);
+    setSelectedTask(null);
+  };
+
+  const handleOpenComplete = (task: TaskList) => {
+    setSelectedTask(task);
+    setCompleteFiles([]);
+    setOpenComplete(true);
+  };
+
+  const handleComplete = async () => {
+    if (!selectedTask) return;
+
+    try {
+      await completeTask(id, selectedTask.id, completeFiles);
+
+      setOpenComplete(false);
+      setSelectedTask(null);
+      setCompleteFiles([]);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   if (loading) {
@@ -86,7 +118,9 @@ export default function TaskPage() {
 
           <Space wrap>
             <Tag color="blue">{todo?.status}</Tag>
+
             <Tag color="orange">{todo?.priority}</Tag>
+
             <Tag color="green">{todo?.category?.name}</Tag>
           </Space>
 
@@ -96,6 +130,71 @@ export default function TaskPage() {
               ? dayjs(todo.due_date).format("DD MMM YYYY")
               : "No Date"}
           </div>
+        </Space>
+      </Card>
+
+      <Card>
+        <Space wrap>
+          <Input.Search
+            placeholder="Search task..."
+            allowClear
+            style={{ width: 250 }}
+            onSearch={(value) =>
+              setQuery((prev) => ({
+                ...prev,
+                search: value,
+              }))
+            }
+          />
+
+          <Select
+            placeholder="Status"
+            style={{ width: 180 }}
+            allowClear
+            value={query.status}
+            onChange={(value) =>
+              setQuery((prev) => ({
+                ...prev,
+                status: value,
+              }))
+            }
+            options={[
+              {
+                label: "Incomplete",
+                value: "INCOMPLETE",
+              },
+              {
+                label: "Completed",
+                value: "COMPLETED",
+              },
+            ]}
+          />
+
+          <Select
+            placeholder="Sort"
+            style={{ width: 180 }}
+            value={query.sort}
+            onChange={(value) =>
+              setQuery((prev) => ({
+                ...prev,
+                sort: value,
+              }))
+            }
+            options={[
+              {
+                label: "Newest",
+                value: "newest",
+              },
+              {
+                label: "Oldest",
+                value: "oldest",
+              },
+              {
+                label: "Alphabetical",
+                value: "alphabetical",
+              },
+            ]}
+          />
         </Space>
       </Card>
 
@@ -116,12 +215,23 @@ export default function TaskPage() {
           <Card
             key={task.id}
             extra={
-              <Button
-                icon={<EditOutlined />}
-                onClick={() => handleOpenUpdate(task)}
-              >
-                Edit
-              </Button>
+              <Space>
+                <Button
+                  icon={<EditOutlined />}
+                  onClick={() => handleOpenUpdate(task)}
+                >
+                  Edit
+                </Button>
+
+                {task.status !== "COMPLETED" && (
+                  <Button
+                    type="primary"
+                    onClick={() => handleOpenComplete(task)}
+                  >
+                    Complete
+                  </Button>
+                )}
+              </Space>
             }
           >
             <Space direction="vertical" className="w-full">
@@ -129,10 +239,20 @@ export default function TaskPage() {
 
               <p>{task.description}</p>
 
-              <Tag>{task.status}</Tag>
+              <Tag
+                color={
+                  task.status === "COMPLETED"
+                    ? "green"
+                    : task.status === "INCOMPLETE"
+                      ? "blue"
+                      : "orange"
+                }
+              >
+                {task.status}
+              </Tag>
 
               <Space wrap>
-                {task.taskImages.map((image) => (
+                {task.taskImages?.map((image) => (
                   <Image
                     key={image.id}
                     src={image.url}
@@ -154,7 +274,15 @@ export default function TaskPage() {
         onCancel={() => setOpenCreate(false)}
       >
         <Form form={form} layout="vertical" onFinish={handleCreate}>
-          <Form.Item name="title" label="Title" rules={[{ required: true }]}>
+          <Form.Item
+            name="title"
+            label="Title"
+            rules={[
+              {
+                required: true,
+              },
+            ]}
+          >
             <Input />
           </Form.Item>
 
@@ -171,7 +299,15 @@ export default function TaskPage() {
         onCancel={() => setOpenUpdate(false)}
       >
         <Form form={updateForm} layout="vertical" onFinish={handleUpdate}>
-          <Form.Item name="title" label="Title" rules={[{ required: true }]}>
+          <Form.Item
+            name="title"
+            label="Title"
+            rules={[
+              {
+                required: true,
+              },
+            ]}
+          >
             <Input />
           </Form.Item>
 
@@ -179,6 +315,45 @@ export default function TaskPage() {
             <Input.TextArea rows={4} />
           </Form.Item>
         </Form>
+      </Modal>
+
+      <Modal
+        title="Complete Task"
+        open={openComplete}
+        confirmLoading={loading}
+        onOk={handleComplete}
+        onCancel={() => {
+          setOpenComplete(false);
+          setSelectedTask(null);
+          setCompleteFiles([]);
+        }}
+      >
+        <Space direction="vertical" className="w-full">
+          <p>
+            Complete task:
+            <strong> {selectedTask?.title}</strong>
+          </p>
+
+          <Upload
+            multiple
+            beforeUpload={(file) => {
+              setCompleteFiles((prev) => [...prev, file]);
+
+              return false;
+            }}
+            onRemove={(file) => {
+              setCompleteFiles((prev) =>
+                prev.filter((f) => f.name !== file.name),
+              );
+            }}
+          >
+            <Button>Select Images</Button>
+          </Upload>
+
+          <p className="text-gray-500 text-sm">
+            Upload evidence images before marking this task as completed.
+          </p>
+        </Space>
       </Modal>
     </div>
   );

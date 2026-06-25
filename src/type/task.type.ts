@@ -28,3 +28,9 @@ export interface CompleteTask {
   taskId: number;
   images?: File[];
 }
+
+export interface TodoTaskQuery {
+  search?: string;
+  status?: "INCOMPLETE" | "COMPLETED";
+  sort?: "newest" | "oldest" | "alphabetical";
+}

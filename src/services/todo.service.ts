@@ -1,5 +1,6 @@
 import axiosInstance from "@/lib/axios";
 import { ApiResponse, PaginatedResponse } from "@/type/api.type";
+import { TodoTaskQuery } from "@/type/task.type";
 import {
   GetTodosParams,
   SearchTodoParams,
@@ -18,10 +19,10 @@ export const todoService = {
     return response.data.data;
   },
 
-  async findOne(todoId: number): Promise<ApiResponse<Todo>> {
-    const response = await axiosInstance.get<ApiResponse<Todo>>(
-      `todo/${todoId}`,
-    );
+  async findOne(todoId: number, query?: TodoTaskQuery) {
+    const response = await axiosInstance.get(`todo/${todoId}`, {
+      params: query,
+    });
 
     return response.data;
   },
