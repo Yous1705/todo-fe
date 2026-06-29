@@ -134,25 +134,31 @@ export function TaskProvider({ children }: TaskProviderProps) {
 
   const startTask = async (todoId: number, taskId: number): Promise<void> => {
     try {
-      setLoading(true);
-
+      // Jangan pakai global `loading` agar UI tidak seperti reload/spinner fullscreen.
       await taskService.start(taskId);
-
       await fetchTodoDetail(todoId);
-    } finally {
-      setLoading(false);
+    } catch (error: any) {
+      setError("Failed to start task");
+      toast?.showToast(
+        error?.response?.data?.message || "Failed to start task",
+        "error",
+      );
+      console.log("error:", error);
     }
   };
 
   const pauseTask = async (todoId: number, taskId: number): Promise<void> => {
     try {
-      setLoading(true);
-
+      // Jangan pakai global `loading` agar UI tidak seperti reload/spinner fullscreen.
       await taskService.pause(taskId);
-
       await fetchTodoDetail(todoId);
-    } finally {
-      setLoading(false);
+    } catch (error: any) {
+      setError("Failed to pause task");
+      toast?.showToast(
+        error?.response?.data?.message || "Failed to pause task",
+        "error",
+      );
+      console.log("error:", error);
     }
   };
 
