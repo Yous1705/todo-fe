@@ -134,9 +134,25 @@ export function TaskProvider({ children }: TaskProviderProps) {
 
   const startTask = async (todoId: number, taskId: number): Promise<void> => {
     try {
-      // Jangan pakai global `loading` agar UI tidak seperti reload/spinner fullscreen.
       await taskService.start(taskId);
-      await fetchTodoDetail(todoId);
+
+      // Optimistic update supaya tidak terlihat "reload" akibat refetch.
+      // Tambahkan baseline waktu agar `time spent` tetap bertambah realtime.
+      setTodo((prev) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          task: prev.task.map((t) =>
+            t.id === taskId
+              ? {
+                  ...t,
+                  isRunning: true,
+                  currentStartedAt: new Date().toISOString(),
+                }
+              : t,
+          ),
+        };
+      });
     } catch (error: any) {
       setError("Failed to start task");
       toast?.showToast(
@@ -149,9 +165,43 @@ export function TaskProvider({ children }: TaskProviderProps) {
 
   const pauseTask = async (todoId: number, taskId: number): Promise<void> => {
     try {
-      // Jangan pakai global `loading` agar UI tidak seperti reload/spinner fullscreen.
       await taskService.pause(taskId);
-      await fetchTodoDetail(todoId);
+
+      // Optimistic update: saat pause, freeze totalDuration agar start berikutnya
+      // melanjutkan dari waktu sebelumnya.
+      // calculateDuration memakai: totalDuration + (tick - currentStartedAt).
+      // Jadi sebelum menghapus currentStartedAt, kita akumulasi seconds yang sudah berjalan.
+      const now = Date.now();
+
+      setTodo((prev) => {
+        if (!prev) return prev;
+
+        return {
+          ...prev,
+          task: prev.task.map((t) => {
+            if (t.id !== taskId) return t;
+            if (!t.currentStartedAt) {
+              return {
+                ...t,
+                isRunning: false,
+                currentStartedAt: null,
+              };
+            }
+
+            const runningSeconds = Math.floor(
+              (now - new Date(t.currentStartedAt).getTime()) / 1000,
+            );
+
+            return {
+              ...t,
+              isRunning: false,
+              // akumulasi ke totalDuration
+              totalDuration: t.totalDuration + runningSeconds,
+              currentStartedAt: null,
+            };
+          }),
+        };
+      });
     } catch (error: any) {
       setError("Failed to pause task");
       toast?.showToast(
