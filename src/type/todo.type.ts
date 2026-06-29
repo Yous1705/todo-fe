@@ -49,3 +49,10 @@ export interface TodoImage {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface Statistics {
+  totalTodo: number;
+  totalTask: number;
+  completedTask: number;
+  pendingTask: number;
+}

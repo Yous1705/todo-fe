@@ -4,8 +4,7 @@ import { categoryService } from "@/services/category.service";
 import { taskService } from "@/services/task.service";
 import { todoService } from "@/services/todo.service";
 import { PaginationMeta } from "@/type/api.type";
-import { TodoTaskQuery } from "@/type/task.type";
-import { SearchTodoParams, Todo, TodoDto } from "@/type/todo.type";
+import { SearchTodoParams, Statistics, Todo, TodoDto } from "@/type/todo.type";
 import {
   createContext,
   ReactNode,
@@ -13,9 +12,11 @@ import {
   useEffect,
   useState,
 } from "react";
+import { useAppToast } from "@/component/AntdAppProvider";
 
 interface TodoContextType {
   todo: Todo[];
+  stats: Statistics | null;
   meta: PaginationMeta | null;
   loading: boolean;
   error: string | null;
@@ -25,8 +26,8 @@ interface TodoContextType {
 
   fetchTodo: (page?: number, limit?: number) => Promise<void>;
   fetchTodosByCategory: (categoryId: number) => Promise<void>;
-  query: TodoTaskQuery;
-  setQuery: React.Dispatch<React.SetStateAction<TodoTaskQuery>>;
+
+  fetchStatistics: () => Promise<void>;
 
   createTodo: (todo: TodoDto, files?: File[]) => Promise<void>;
   updateTodo: (id: number, todo: Partial<TodoDto>) => Promise<void>;
@@ -52,13 +53,12 @@ interface TodoProviderProps {
 export function TodoProvider({ children }: TodoProviderProps) {
   const [todo, setTodo] = useState<Todo[]>([]);
   const [task, setTask] = useState<Todo>();
+  const [stats, setStats] = useState<Statistics | null>(null);
   const [meta, setMeta] = useState<PaginationMeta | null>(null);
   const [searchKeyword, setSearchKeyword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [query, setQuery] = useState<TodoTaskQuery>({
-    sort: "newest",
-  });
+  const toast = useAppToast();
 
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
@@ -78,6 +78,22 @@ export function TodoProvider({ children }: TodoProviderProps) {
     } catch (error) {
       setError("faild to fetch Todo");
       console.log("error : ", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchStatistics = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const result = await todoService.getStats();
+
+      setStats(result.data);
+    } catch (error) {
+      setError("Failed to fetch tasks");
+      console.log("error:", error);
     } finally {
       setLoading(false);
     }
@@ -140,18 +156,45 @@ export function TodoProvider({ children }: TodoProviderProps) {
   };
 
   const createTodo = async (todo: TodoDto, files?: File[]) => {
-    await todoService.create(todo, files);
-    await fetchTodo();
+    try {
+      await todoService.create(todo, files);
+      await fetchTodo();
+      toast?.showToast("Todo created successfully", "success");
+    } catch (error: any) {
+      toast?.showToast(
+        error?.response?.data?.message || "Failed to create todo",
+        "error",
+      );
+      throw error;
+    }
   };
 
   const updateTodo = async (id: number, todo: Partial<TodoDto>) => {
-    await todoService.update(id, todo);
-    await fetchTodo();
+    try {
+      await todoService.update(id, todo);
+      await fetchTodo();
+      toast?.showToast("Todo updated successfully", "success");
+    } catch (error: any) {
+      toast?.showToast(
+        error?.response?.data?.message || "Failed to update todo",
+        "error",
+      );
+      throw error;
+    }
   };
 
   const deleteTodo = async (id: number) => {
-    await todoService.delete(id);
-    await fetchTodo();
+    try {
+      await todoService.delete(id);
+      await fetchTodo();
+      toast?.showToast("Todo deleted successfully", "success");
+    } catch (error: any) {
+      toast?.showToast(
+        error?.response?.data?.message || "Failed to delete todo",
+        "error",
+      );
+      throw error;
+    }
   };
 
   useEffect(() => {
@@ -160,17 +203,23 @@ export function TodoProvider({ children }: TodoProviderProps) {
     }
   }, [page, limit, searchKeyword]);
 
+  useEffect(() => {
+    fetchStatistics();
+  }, []);
+
   return (
     <TodoContext.Provider
       value={{
         todo,
         meta,
+        stats,
         loading,
         error,
         page,
         limit,
         searchKeyword,
         fetchTodo,
+        fetchStatistics,
         fetchTodosByCategory,
         createTodo,
         updateTodo,

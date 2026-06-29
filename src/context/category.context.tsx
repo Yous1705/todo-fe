@@ -7,8 +7,8 @@ import {
   useEffect,
   useState,
 } from "react";
-import { message } from "antd";
 import { categoryService } from "@/services/category.service";
+import { useAppToast } from "@/component/AntdAppProvider";
 import {
   Category,
   CreateCategoryDto,
@@ -40,6 +40,7 @@ interface CategoryProviderProps {
 export function CategoryProvider({ children }: CategoryProviderProps) {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(false);
+  const toast = useAppToast();
 
   const fetchCategories = async (): Promise<void> => {
     try {
@@ -49,8 +50,9 @@ export function CategoryProvider({ children }: CategoryProviderProps) {
 
       setCategories(response.data);
     } catch (error: any) {
-      message.error(
+      toast?.showToast(
         error?.response?.data?.message || "Failed to fetch categories",
+        "error",
       );
     } finally {
       setLoading(false);
@@ -65,14 +67,15 @@ export function CategoryProvider({ children }: CategoryProviderProps) {
 
       const response = await categoryService.create(payload);
 
-      message.success(response.message);
+      toast?.showToast(response.message, "success");
 
       await fetchCategories();
 
       return true;
     } catch (error: any) {
-      message.error(
+      toast?.showToast(
         error?.response?.data?.message || "Failed to create category",
+        "error",
       );
       return false;
     } finally {
@@ -89,14 +92,15 @@ export function CategoryProvider({ children }: CategoryProviderProps) {
 
       const response = await categoryService.update(categoryId, payload);
 
-      message.success(response.message);
+      toast?.showToast(response.message, "success");
 
       await fetchCategories();
 
       return true;
     } catch (error: any) {
-      message.error(
+      toast?.showToast(
         error?.response?.data?.message || "Failed to update category",
+        "error",
       );
       return false;
     } finally {
@@ -110,14 +114,15 @@ export function CategoryProvider({ children }: CategoryProviderProps) {
 
       const response = await categoryService.delete(categoryId);
 
-      message.success(response.message);
+      toast?.showToast(response.message, "success");
 
       await fetchCategories();
 
       return true;
     } catch (error: any) {
-      message.error(
+      toast?.showToast(
         error?.response?.data?.message || "Failed to delete category",
+        "error",
       );
       return false;
     } finally {

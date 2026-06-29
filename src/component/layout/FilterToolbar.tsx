@@ -27,15 +27,15 @@ export default function FilterToolbar({
 }: FilterToolbarProps) {
   return (
     <Card
-      className="border-slate-200/80 shadow-sm"
+      className="border-slate-800/60 bg-[#151D30] shadow-xl"
       styles={{ body: { padding: "1rem" } }}
     >
       <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
         <Space wrap size="middle" className="w-full lg:w-auto">
           <Input
             placeholder="Search by title..."
-            prefix={<Search className="w-4 h-4 text-slate-400 mr-1" />}
-            className="w-full sm:w-64 rounded-lg"
+            prefix={<Search className="w-4 h-4 text-slate-400 mr-1.5" />}
+            className="w-full sm:w-64 rounded-xl border-slate-700 bg-[#1E293B]"
             value={filters.title ?? ""}
             onChange={(e) => setFilters({ ...filters, title: e.target.value })}
             onPressEnter={handleSearch}
@@ -44,6 +44,11 @@ export default function FilterToolbar({
           <Select
             placeholder="All Status"
             className="w-full sm:w-40"
+            classNames={{
+              popup: {
+                root: "bg-[#151D30] border border-slate-800 rounded-xl",
+              },
+            }}
             value={filters.status}
             onChange={(value) =>
               setFilters({ ...filters, status: value || undefined })
@@ -56,8 +61,13 @@ export default function FilterToolbar({
           />
 
           <Select
-            placeholder="All Category"
+            placeholder="All Categories"
             className="w-full sm:w-48"
+            classNames={{
+              popup: {
+                root: "bg-[#151D30] border border-slate-800 rounded-xl",
+              },
+            }}
             value={filters.categoryId}
             allowClear
             onChange={(value) => setFilters({ ...filters, categoryId: value })}
@@ -66,7 +76,7 @@ export default function FilterToolbar({
               label: (
                 <div className="flex items-center gap-2">
                   <span
-                    className="w-3 h-3 rounded-full"
+                    className="w-2.5 h-2.5 rounded-full"
                     style={{ backgroundColor: cat.color }}
                   />
                   <span>{cat.name}</span>
@@ -76,14 +86,19 @@ export default function FilterToolbar({
           />
 
           <Select
-            placeholder="All Priority"
+            placeholder="All Priorities"
             className="w-full sm:w-40"
+            classNames={{
+              popup: {
+                root: "bg-[#151D30] border border-slate-800 rounded-xl",
+              },
+            }}
             value={filters.priority}
             onChange={(value) =>
               setFilters({ ...filters, priority: value || undefined })
             }
             options={[
-              { value: "", label: "All Priority" },
+              { value: "", label: "All Priorities" },
               { value: "LOW", label: "Low" },
               { value: "MEDIUM", label: "Medium" },
               { value: "HIGH", label: "High" },
@@ -91,22 +106,23 @@ export default function FilterToolbar({
           />
         </Space>
 
-        <div className="flex items-center justify-between lg:justify-end gap-3 w-full lg:w-auto border-t lg:border-none pt-3 lg:pt-0">
+        <div className="flex items-center justify-between lg:justify-end gap-3 w-full lg:w-auto border-t border-slate-800 lg:border-none pt-3 lg:pt-0">
           <Radio.Group
             value={viewMode}
             onChange={(e) => setViewMode(e.target.value)}
             optionType="button"
             buttonStyle="solid"
+            className="rounded-xl overflow-hidden"
           >
             <Radio.Button
               value="grid"
-              className="flex items-center justify-center h-8 px-3"
+              className="flex items-center justify-center h-9 px-3 border-slate-700 bg-[#1E293B]"
             >
               <LayoutGrid className="w-4 h-4" />
             </Radio.Button>
             <Radio.Button
               value="list"
-              className="flex items-center justify-center h-8 px-3"
+              className="flex items-center justify-center h-9 px-3 border-slate-700 bg-[#1E293B]"
             >
               <List className="w-4 h-4" />
             </Radio.Button>
@@ -115,7 +131,7 @@ export default function FilterToolbar({
           <Space size="small">
             <button
               onClick={handleSearch}
-              className="bg-slate-900 text-white hover:bg-slate-800 px-4 h-8 text-sm font-medium rounded-lg transition-colors"
+              className="bg-blue-600 text-white hover:bg-blue-700 px-5 h-9 text-sm font-semibold rounded-xl transition-colors shadow-md"
             >
               Apply
             </button>
@@ -129,7 +145,8 @@ export default function FilterToolbar({
                 });
                 await clearSearch();
               }}
-              className="border border-slate-200 hover:bg-slate-50 flex items-center justify-center h-8 w-8 rounded-lg"
+              className="border border-slate-700 bg-[#1E293B] hover:bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center h-9 w-9 rounded-xl transition-colors"
+              title="Reset Filters"
             >
               <RotateCcw className="w-4 h-4" />
             </button>

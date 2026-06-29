@@ -4,6 +4,7 @@ import { TodoTaskQuery } from "@/type/task.type";
 import {
   GetTodosParams,
   SearchTodoParams,
+  Statistics,
   Todo,
   TodoDto,
 } from "@/type/todo.type";
@@ -17,6 +18,12 @@ export const todoService = {
     });
 
     return response.data.data;
+  },
+
+  async getStats(): Promise<ApiResponse<Statistics>> {
+    const response =
+      await axiosInstance.get<ApiResponse<Statistics>>("todo/stats");
+    return response.data;
   },
 
   async findOne(todoId: number, query?: TodoTaskQuery) {

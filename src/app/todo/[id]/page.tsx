@@ -3,7 +3,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import { useTask } from "@/hooks/useTask";
-import { ConfigProvider, theme, Spin, notification, Form, Button } from "antd";
+import { ConfigProvider, theme, Spin, Form, Button } from "antd";
 import {
   PlusOutlined,
   ArrowLeftOutlined,
@@ -18,6 +18,7 @@ import UpdateTaskModal from "@/components/task-components/UpdateTaskModal";
 import CompleteTaskModal from "@/components/task-components/CompleteTaskModal";
 import { useTaskTimer } from "@/hooks/useTaskTimer";
 import type { TaskDto, TaskList } from "@/type/task.type";
+import { useAppToast } from "@/component/AntdAppProvider";
 
 export default function TaskPage() {
   const params = useParams();
@@ -41,6 +42,7 @@ export default function TaskPage() {
   const [openComplete, setOpenComplete] = useState(false);
   const [completeFiles, setCompleteFiles] = useState<File[]>([]);
   const [selectedTask, setSelectedTask] = useState<TaskList | null>(null);
+  const toast = useAppToast();
 
   const [form] = Form.useForm();
   const [updateForm] = Form.useForm();
@@ -57,11 +59,7 @@ export default function TaskPage() {
     await createTask(id, values);
     setOpenCreate(false);
     form.resetFields();
-    notification.success({
-      message: "Task Created",
-      description: "Successfully added a new subtask to current scope.",
-      placement: "bottomRight",
-    });
+    toast?.showToast("Task created successfully", "success");
   };
 
   const handleOpenUpdate = (task: TaskList) => {
@@ -78,12 +76,7 @@ export default function TaskPage() {
     await updateTask(id, selectedTask.id, values);
     setOpenUpdate(false);
     setSelectedTask(null);
-    notification.success({
-      message: "Task Updated",
-      description:
-        "Changes have been successfully synchronized to base layers.",
-      placement: "bottomRight",
-    });
+    toast?.showToast("Task updated successfully", "success");
   };
 
   const handleOpenComplete = (task: TaskList) => {
@@ -99,11 +92,7 @@ export default function TaskPage() {
       setOpenComplete(false);
       setSelectedTask(null);
       setCompleteFiles([]);
-      notification.success({
-        message: "Task Completed",
-        description: "Milestone saved and evidence submitted safely.",
-        placement: "bottomRight",
-      });
+      toast?.showToast("Task completed successfully", "success");
     } catch (error) {
       console.error(error);
     }

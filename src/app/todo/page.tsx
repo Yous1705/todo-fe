@@ -7,15 +7,19 @@ import { useTodo } from "@/hooks/useTodo";
 import { useCategory } from "@/hooks/useCategory";
 import { SearchTodoParams, Todo } from "@/type/todo.type";
 import { Category } from "@/type/category.type";
-import CreateTodoDrawer from "@/component/CreateTodoDrawer";
-import UpdateTodoDrawer from "@/component/UpdateTodoDrawer";
-import CreateCategoryDrawer from "@/component/CreateCategoryDrawer";
-import UpdateCategoryDrawer from "@/component/updateCategoryDrawer";
+
+// Modal Component Imports (Updated from Drawers)
+
+// Layout Component Imports
 import DashboardHeader from "@/component/layout/DashboardHeader";
 import FilterToolbar from "@/component/layout/FilterToolbar";
 import CategoryManager from "@/component/layout/CategoryManager";
 import TodoGridView from "@/component/layout/TodoGridView";
 import TodoListView from "@/component/layout/TodoListView";
+import CreateTodoModal from "@/component/CreateTodoModal";
+import UpdateTodoModal from "@/component/UpdateTodoModal";
+import CreateCategoryModal from "@/component/CreateCategoryModal";
+import UpdateCategoryModal from "@/component/updateCategoryModal";
 
 function Page() {
   const {
@@ -24,6 +28,7 @@ function Page() {
     loading,
     error,
     page,
+    stats,
     setPage,
     searchTodos,
     clearSearch,
@@ -32,7 +37,7 @@ function Page() {
   } = useTodo();
   const { categories, deleteCategory } = useCategory();
 
-  // Drawers Visibility States
+  // Modals Visibility States
   const [openCreate, setOpenCreate] = useState(false);
   const [openUpdate, setOpenUpdate] = useState(false);
   const [openCreateCategory, setOpenCreateCategory] = useState(false);
@@ -103,139 +108,160 @@ function Page() {
 
   if (loading)
     return (
-      <div className="flex h-screen items-center justify-center text-slate-500 bg-slate-50">
-        Loading application...
+      <div className="flex h-screen items-center justify-center text-slate-400 bg-[#0B0F19]">
+        <div className="flex flex-col items-center gap-3">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+          <span className="text-sm font-medium">Loading application...</span>
+        </div>
       </div>
     );
+
   if (error)
     return (
-      <div className="flex h-screen items-center justify-center text-rose-500 bg-slate-50">
-        {error}
+      <div className="flex h-screen items-center justify-center text-rose-400 bg-[#0B0F19]">
+        <div className="bg-[#151D30] border border-rose-950/50 p-6 rounded-xl shadow-lg text-center max-w-md">
+          <p className="font-semibold m-0">{error}</p>
+        </div>
       </div>
     );
 
   return (
-    <ConfigProvider theme={{ algorithm: theme.defaultAlgorithm }}>
-      <div className="min-h-screen bg-[#F8FAFC] py-10 antialiased">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-          <DashboardHeader
-            showCategories={showCategories}
-            setShowCategories={setShowCategories}
-            setOpenCreate={setOpenCreate}
-          />
+    <ConfigProvider
+      theme={{
+        algorithm: theme.darkAlgorithm,
+        token: {
+          colorPrimary: "#3B82F6",
+          colorBgBase: "#0B0F19",
+          colorBgContainer: "#151D30",
+          colorBorder: "rgba(255, 255, 255, 0.08)",
+          borderRadius: 12,
+        },
+      }}
+    >
+      <App>
+        <div className="min-h-screen bg-[#0B0F19] py-10 antialiased text-slate-200">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+            <DashboardHeader
+              showCategories={showCategories}
+              setShowCategories={setShowCategories}
+              setOpenCreate={setOpenCreate}
+              stats={stats}
+            />
 
-          <FilterToolbar
-            filters={filters}
-            setFilters={setFilters}
-            categories={categories}
-            viewMode={viewMode}
-            setViewMode={setViewMode}
-            handleSearch={handleSearch}
-            clearSearch={clearSearch}
-          />
-
-          {showCategories && (
-            <CategoryManager
+            <FilterToolbar
+              filters={filters}
+              setFilters={setFilters}
               categories={categories}
-              deletingCategoryId={deletingCategoryId}
-              setOpenCreateCategory={setOpenCreateCategory}
-              handleOpenUpdateCategory={(cat) => {
-                setSelectedCategory(cat);
-                setOpenUpdateCategory(true);
-              }}
-              handleDeleteCategory={handleDeleteCategory}
+              viewMode={viewMode}
+              setViewMode={setViewMode}
+              handleSearch={handleSearch}
+              clearSearch={clearSearch}
             />
-          )}
 
-          {/* Main Content Conditional Grid/List Rendering */}
-          {todo.length === 0 ? (
-            <Card
-              className="border-slate-200/80 text-center max-w-xl mx-auto shadow-sm"
-              styles={{ body: { padding: "3rem 2rem" } }}
-            >
-              <div className="space-y-4">
-                <div className="w-16 h-16 mx-auto bg-slate-50 border border-slate-100 rounded-full flex items-center justify-center text-slate-400">
-                  <Clock className="w-8 h-8" />
-                </div>
-                <h3 className="text-lg font-semibold text-slate-900 m-0">
-                  No tasks found
-                </h3>
-                <button
-                  onClick={() => setOpenCreate(true)}
-                  className="bg-blue-600 text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-blue-700"
-                >
-                  Create Todo
-                </button>
-              </div>
-            </Card>
-          ) : viewMode === "grid" ? (
-            <TodoGridView
-              todo={todo}
-              deletingId={deletingId}
-              handleOpenUpdate={(item) => {
-                setSelectedTodo(item);
-                setOpenUpdate(true);
-              }}
-              handleDelete={handleDelete}
-            />
-          ) : (
-            <TodoListView
-              todo={todo}
-              deletingId={deletingId}
-              handleOpenUpdate={(item) => {
-                setSelectedTodo(item);
-                setOpenUpdate(true);
-              }}
-              handleDelete={handleDelete}
-            />
-          )}
-
-          {meta && (
-            <div className="flex items-center justify-between border-t border-slate-200/80 pt-6">
-              <span className="text-sm text-slate-500 font-medium">
-                Showing page{" "}
-                <span className="text-slate-900 font-semibold">
-                  {meta.page}
-                </span>{" "}
-                of {meta.totalPages}
-              </span>
-              <Pagination
-                simple
-                current={page}
-                total={meta.totalPages * 10}
-                onChange={(p) => setPage(p)}
-                disabled={loading}
+            {showCategories && (
+              <CategoryManager
+                categories={categories}
+                deletingCategoryId={deletingCategoryId}
+                setOpenCreateCategory={setOpenCreateCategory}
+                handleOpenUpdateCategory={(cat) => {
+                  setSelectedCategory(cat);
+                  setOpenUpdateCategory(true);
+                }}
+                handleDeleteCategory={handleDeleteCategory}
               />
-            </div>
-          )}
-        </div>
+            )}
 
-        {/* Global Drawers */}
-        <CreateTodoDrawer
-          open={openCreate}
-          onClose={() => setOpenCreate(false)}
-        />
-        <UpdateTodoDrawer
-          open={openUpdate}
-          onClose={() => {
-            setOpenUpdate(false);
-            setSelectedTodo(null);
-          }}
-          todo={selectedTodo}
-        />
-        <CreateCategoryDrawer
-          open={openCreateCategory}
-          onClose={() => setOpenCreateCategory(false)}
-        />
-        <UpdateCategoryDrawer
-          open={openUpdateCategory}
-          onClose={() => {
-            setOpenUpdateCategory(false);
-            setSelectedCategory(null);
-          }}
-          category={selectedCategory}
-        />
-      </div>
+            {/* Main Content Conditional Grid/List Rendering */}
+            {todo.length === 0 ? (
+              <Card
+                className="border-slate-800/60 bg-[#151D30] text-center max-w-xl mx-auto shadow-xl"
+                styles={{ body: { padding: "3rem 2rem" } }}
+              >
+                <div className="space-y-4">
+                  <div className="w-16 h-16 mx-auto bg-[#1E293B] border border-slate-700/50 rounded-full flex items-center justify-center text-slate-400">
+                    <Clock className="w-8 h-8" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-slate-100 m-0">
+                    No tasks found
+                  </h3>
+                  <p className="text-slate-400 text-sm max-w-xs mx-auto m-0">
+                    Get started by creating your very first task right now.
+                  </p>
+                  <button
+                    onClick={() => setOpenCreate(true)}
+                    className="bg-blue-600 text-white text-sm font-semibold px-5 py-2.5 rounded-xl hover:bg-blue-700 transition active:scale-95 shadow-lg shadow-blue-600/10"
+                  >
+                    Create Todo
+                  </button>
+                </div>
+              </Card>
+            ) : viewMode === "grid" ? (
+              <TodoGridView
+                todo={todo}
+                deletingId={deletingId}
+                handleOpenUpdate={(item) => {
+                  setSelectedTodo(item);
+                  setOpenUpdate(true);
+                }}
+                handleDelete={handleDelete}
+              />
+            ) : (
+              <TodoListView
+                todo={todo}
+                deletingId={deletingId}
+                handleOpenUpdate={(item) => {
+                  setSelectedTodo(item);
+                  setOpenUpdate(true);
+                }}
+                handleDelete={handleDelete}
+              />
+            )}
+
+            {meta && (
+              <div className="flex items-center justify-between border-t border-slate-800/60 pt-6">
+                <span className="text-sm text-slate-400 font-medium">
+                  Showing page{" "}
+                  <span className="text-slate-100 font-bold">{meta.page}</span>{" "}
+                  of {meta.totalPages}
+                </span>
+                <Pagination
+                  simple
+                  current={page}
+                  total={meta.totalPages * 10}
+                  onChange={(p) => setPage(p)}
+                  disabled={loading}
+                />
+              </div>
+            )}
+          </div>
+
+          {/* Global Modals */}
+          <CreateTodoModal
+            open={openCreate}
+            onClose={() => setOpenCreate(false)}
+          />
+          <UpdateTodoModal
+            open={openUpdate}
+            onClose={() => {
+              setOpenUpdate(false);
+              setSelectedTodo(null);
+            }}
+            todo={selectedTodo}
+          />
+          <CreateCategoryModal
+            open={openCreateCategory}
+            onClose={() => setOpenCreateCategory(false)}
+          />
+          <UpdateCategoryModal
+            open={openUpdateCategory}
+            onClose={() => {
+              setOpenUpdateCategory(false);
+              setSelectedCategory(null);
+            }}
+            category={selectedCategory}
+          />
+        </div>
+      </App>
     </ConfigProvider>
   );
 }

@@ -5,6 +5,7 @@ import { todoService } from "@/services/todo.service";
 import { TaskDto, TodoTaskQuery } from "@/type/task.type";
 import { Todo } from "@/type/todo.type";
 import { createContext, ReactNode, useEffect, useState } from "react";
+import { useAppToast } from "@/component/AntdAppProvider";
 
 interface TaskContextType {
   todo: Todo | undefined;
@@ -41,6 +42,7 @@ export function TaskProvider({ children }: TaskProviderProps) {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const toast = useAppToast();
 
   const fetchTodoDetail = async (todoId: number): Promise<void> => {
     try {
@@ -68,8 +70,13 @@ export function TaskProvider({ children }: TaskProviderProps) {
 
       await taskService.create(todoId, payload);
       await fetchTodoDetail(todoId);
-    } catch (error) {
+      toast?.showToast("Task created successfully", "success");
+    } catch (error: any) {
       setError("Failed to create task");
+      toast?.showToast(
+        error?.response?.data?.message || "Failed to create task",
+        "error",
+      );
       console.log("error:", error);
     } finally {
       setLoading(false);
@@ -87,8 +94,13 @@ export function TaskProvider({ children }: TaskProviderProps) {
 
       await taskService.update(taskId, payload);
       await fetchTodoDetail(todoId);
-    } catch (error) {
+      toast?.showToast("Task updated successfully", "success");
+    } catch (error: any) {
       setError("Failed to update task");
+      toast?.showToast(
+        error?.response?.data?.message || "Failed to update task",
+        "error",
+      );
       console.log("error:", error);
     } finally {
       setLoading(false);
@@ -107,8 +119,13 @@ export function TaskProvider({ children }: TaskProviderProps) {
       await taskService.complete(taskId, files);
 
       await fetchTodoDetail(todoId);
-    } catch (error) {
+      toast?.showToast("Task completed successfully", "success");
+    } catch (error: any) {
       setError("Failed to complete task");
+      toast?.showToast(
+        error?.response?.data?.message || "Failed to complete task",
+        "error",
+      );
       console.log(error);
     } finally {
       setLoading(false);
