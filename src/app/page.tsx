@@ -84,7 +84,10 @@ export default function HomePage() {
 
       setAuthModalOpen(false);
     } catch (error: any) {
-      // triggerToast("Email atau password tidak valid.", "info");
+      triggerToast(
+        error.response?.data?.message || "Terjadi kesalahan.",
+        "info",
+      );
       console.log("error response: ", error.response?.data);
       console.log("error: ", error);
     }
@@ -100,7 +103,7 @@ export default function HomePage() {
   };
 
   return (
-    <div className="bg-slate-50 text-slate-900 font-sans min-h-screen relative selection:bg-indigo-500 selection:text-white overflow-x-hidden">
+    <div className="bg-[#0B0F19] text-slate-200 font-sans min-h-screen relative selection:bg-indigo-500 selection:text-white overflow-x-hidden">
       <Toast show={toast.show} message={toast.message} type={toast.type} />
       <Navbar
         scrolled={scrolled}

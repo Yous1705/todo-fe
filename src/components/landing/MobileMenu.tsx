@@ -13,43 +13,43 @@ export function MobileMenu({ open, onClose, onOpenAuth }: MobileMenuProps) {
   }
 
   return (
-    <div className="md:hidden mt-3 mx-4 p-4 bg-white/95 backdrop-blur-md rounded-2xl border border-indigo-50 shadow-xl space-y-3">
+    <div className="md:hidden mt-3 mx-4 p-4 bg-[#0B0F19]/95 backdrop-blur-md rounded-2xl border border-[#2D3139] shadow-xl space-y-3">
       <a
         href="#features"
         onClick={onClose}
-        className="block px-3 py-2 rounded-xl text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 font-medium transition-colors"
+        className="block px-3 py-2 rounded-xl text-slate-200 hover:bg-[#151D30] hover:text-indigo-300 font-medium transition-colors"
       >
         Fitur
       </a>
       <a
         href="#workflow"
         onClick={onClose}
-        className="block px-3 py-2 rounded-xl text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 font-medium transition-colors"
+        className="block px-3 py-2 rounded-xl text-slate-200 hover:bg-[#151D30] hover:text-indigo-300 font-medium transition-colors"
       >
         Alur Kerja
       </a>
       <a
         href="#stats"
         onClick={onClose}
-        className="block px-3 py-2 rounded-xl text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 font-medium transition-colors"
+        className="block px-3 py-2 rounded-xl text-slate-200 hover:bg-[#151D30] hover:text-indigo-300 font-medium transition-colors"
       >
         Analitik
       </a>
       <a
         href="#roadmap"
         onClick={onClose}
-        className="block px-3 py-2 rounded-xl text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 font-medium transition-colors"
+        className="block px-3 py-2 rounded-xl text-slate-200 hover:bg-[#151D30] hover:text-indigo-300 font-medium transition-colors"
       >
         Roadmap
       </a>
-      <hr className="border-slate-100" />
+      <hr className="border-[#2D3139]" />
       <div className="flex items-center justify-between pt-2">
         <button
           onClick={() => {
             onClose();
             onOpenAuth("login");
           }}
-          className="text-slate-600 font-semibold px-4 py-2"
+          className="text-slate-200 font-semibold px-4 py-2"
         >
           Masuk
         </button>
@@ -58,18 +58,18 @@ export function MobileMenu({ open, onClose, onOpenAuth }: MobileMenuProps) {
             onClose();
             onOpenAuth("register");
           }}
-          className="bg-indigo-600 text-white font-semibold px-5 py-2.5 rounded-xl text-center"
+          className="bg-[#1976D2] text-white font-semibold px-5 py-2.5 rounded-xl text-center"
         >
           Daftar
         </button>
       </div>
-      <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-sm text-slate-400">
+      <div className="pt-3 border-t border-[#2D3139] flex items-center justify-between text-sm text-slate-400">
         <span>GitHub</span>
         <a
           href="https://github.com"
           target="_blank"
           rel="noreferrer"
-          className="text-slate-600 hover:text-indigo-600"
+          className="text-slate-400 hover:text-indigo-300"
           aria-label="GitHub Repository"
         >
           <Github />

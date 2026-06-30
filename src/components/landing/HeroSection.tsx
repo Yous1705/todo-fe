@@ -9,13 +9,13 @@ interface HeroSectionProps {
 
 export function HeroSection({ onOpenAuth }: HeroSectionProps) {
   return (
-    <section className="relative pt-32 pb-24 md:pt-44 md:pb-32 overflow-hidden bg-gradient-to-b from-indigo-50/50 via-white to-slate-50">
+    <section className="relative pt-32 pb-24 md:pt-44 md:pb-32 overflow-hidden bg-gradient-to-b from-[#0B0F19] via-[#0B0F19] to-[#181A20]">
       <div className="absolute top-20 left-1/2 -translate-x-1/2 w-[700px] h-[700px] bg-gradient-to-tr from-indigo-100/40 to-cyan-100/30 rounded-full blur-[120px] -z-10 pointer-events-none" />
       <div className="absolute top-44 right-10 w-72 h-72 bg-purple-100/30 rounded-full blur-[80px] -z-10 pointer-events-none animate-float-medium" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
         <div className="lg:col-span-6 text-center lg:text-left space-y-6">
-          <div className="inline-flex items-center space-x-2 bg-indigo-50 border border-indigo-100 px-4 py-2 rounded-full text-xs font-semibold text-indigo-700 tracking-wide shadow-sm animate-pulse-subtle">
+          <div className="inline-flex items-center space-x-2 bg-[#151D30] border border-[#2D3139] px-4 py-2 rounded-full text-xs font-semibold text-[#B0BEC5] tracking-wide shadow-sm animate-pulse-subtle">
             <span className="flex h-2 w-2 relative">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75" />
               <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-600" />
@@ -23,7 +23,7 @@ export function HeroSection({ onOpenAuth }: HeroSectionProps) {
             <span>TaskFlow Startup Launch — V2.6 Release</span>
           </div>
 
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 leading-[1.12]">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.12]">
             Organize Your Tasks. <br />
             <span className="bg-gradient-to-r from-indigo-600 via-purple-600 to-cyan-500 bg-clip-text text-transparent">
               Track Your Progress.
@@ -32,7 +32,7 @@ export function HeroSection({ onOpenAuth }: HeroSectionProps) {
             Achieve More.
           </h1>
 
-          <p className="text-base sm:text-lg text-slate-600 max-w-xl mx-auto lg:mx-0 leading-relaxed">
+          <p className="text-base sm:text-lg text-[#B0BEC5] max-w-xl mx-auto lg:mx-0 leading-relaxed">
             Sebuah platform produktivitas modern yang dirancang untuk membantu
             Anda mengelola tugas harian, memetakan prioritas, memantau kemajuan,
             dan tetap fokus pada pencapaian terbaik Anda.

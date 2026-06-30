@@ -3,14 +3,14 @@ import { Github, LogoMark } from "../../lib/icons";
 
 export function Footer() {
   return (
-    <footer className="bg-slate-50 border-t border-slate-100 text-slate-500 text-sm py-16">
+    <footer className="bg-[#0B0F19] border-t border-[#2D3139] text-slate-400 text-sm py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-10">
         <div className="space-y-4">
           <div className="flex items-center space-x-2.5">
             <div className="bg-gradient-to-tr from-indigo-500 to-purple-500 p-2 rounded-xl shadow-sm">
               <LogoMark />
             </div>
-            <span className="text-lg font-bold text-slate-900">TaskFlow</span>
+            <span className="text-lg font-bold text-white">TaskFlow</span>
           </div>
           <p className="text-xs leading-relaxed">
             TaskFlow adalah platform manajemen tugas modern berkualitas tinggi
@@ -20,7 +20,7 @@ export function Footer() {
         </div>
 
         <div>
-          <h5 className="font-bold text-slate-800 mb-4 text-xs uppercase tracking-wider">
+          <h5 className="font-bold text-slate-300 mb-4 text-xs uppercase tracking-wider">
             Produk
           </h5>
           <ul className="space-y-2 text-xs">
@@ -52,7 +52,7 @@ export function Footer() {
         </div>
 
         <div>
-          <h5 className="font-bold text-slate-800 mb-4 text-xs uppercase tracking-wider">
+          <h5 className="font-bold text-slate-300 mb-4 text-xs uppercase tracking-wider">
             Rencana Mendatang
           </h5>
           <ul className="space-y-2 text-xs">
@@ -76,7 +76,7 @@ export function Footer() {
         </div>
 
         <div>
-          <h5 className="font-bold text-slate-800 mb-4 text-xs uppercase tracking-wider">
+          <h5 className="font-bold text-slate-300 mb-4 text-xs uppercase tracking-wider">
             Kontak & Repositori
           </h5>
           <ul className="space-y-2 text-xs">

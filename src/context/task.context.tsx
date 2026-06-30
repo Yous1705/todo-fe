@@ -136,8 +136,6 @@ export function TaskProvider({ children }: TaskProviderProps) {
     try {
       await taskService.start(taskId);
 
-      // Optimistic update supaya tidak terlihat "reload" akibat refetch.
-      // Tambahkan baseline waktu agar `time spent` tetap bertambah realtime.
       setTodo((prev) => {
         if (!prev) return prev;
         return {
@@ -167,10 +165,6 @@ export function TaskProvider({ children }: TaskProviderProps) {
     try {
       await taskService.pause(taskId);
 
-      // Optimistic update: saat pause, freeze totalDuration agar start berikutnya
-      // melanjutkan dari waktu sebelumnya.
-      // calculateDuration memakai: totalDuration + (tick - currentStartedAt).
-      // Jadi sebelum menghapus currentStartedAt, kita akumulasi seconds yang sudah berjalan.
       const now = Date.now();
 
       setTodo((prev) => {
@@ -195,7 +189,6 @@ export function TaskProvider({ children }: TaskProviderProps) {
             return {
               ...t,
               isRunning: false,
-              // akumulasi ke totalDuration
               totalDuration: t.totalDuration + runningSeconds,
               currentStartedAt: null,
             };

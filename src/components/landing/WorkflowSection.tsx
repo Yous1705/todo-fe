@@ -5,17 +5,17 @@ export function WorkflowSection() {
   return (
     <section
       id="workflow"
-      className="py-24 bg-gradient-to-b from-slate-50 via-indigo-50/20 to-white overflow-hidden"
+      className="py-24 bg-gradient-to-b from-[#0B0F19] via-[#0B0F19] to-[#181A20] overflow-hidden"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-20 space-y-4">
-          <h2 className="text-sm font-extrabold tracking-widest text-indigo-600 uppercase">
+          <h2 className="text-sm font-extrabold tracking-widest text-indigo-300 uppercase">
             Workspace Terintegrasi
           </h2>
-          <p className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+          <p className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
             Alur Kerja Intuitif dalam 4 Langkah
           </p>
-          <p className="text-slate-500 text-base sm:text-lg">
+          <p className="text-slate-400 text-base sm:text-lg">
             Dirancang secara sistematis untuk mendukung perjalanan produktivitas
             profesional Anda dengan maksimal.
           </p>
@@ -28,7 +28,7 @@ export function WorkflowSection() {
             {workflowSteps.map((step, index) => (
               <div
                 key={step.title}
-                className="relative bg-white p-8 rounded-3xl border border-slate-100 shadow-md hover:shadow-lg transition-all text-center"
+                className="relative bg-[#151D30] p-8 rounded-3xl border border-[#2D3139] shadow-md hover:shadow-lg transition-all text-center"
               >
                 <span
                   className={`absolute -top-4 left-1/2 transform -translate-x-1/2 w-8 h-8 rounded-full ${step.badgeBackground} text-white font-bold text-sm flex items-center justify-center`}
@@ -40,10 +40,10 @@ export function WorkflowSection() {
                 >
                   {step.icon}
                 </div>
-                <h4 className="text-lg font-bold text-slate-900 mb-2">
+                <h4 className="text-lg font-bold text-white mb-2">
                   {step.title}
                 </h4>
-                <p className="text-slate-500 text-xs leading-relaxed">
+                <p className="text-slate-400 text-xs leading-relaxed">
                   {step.description}
                 </p>
               </div>
